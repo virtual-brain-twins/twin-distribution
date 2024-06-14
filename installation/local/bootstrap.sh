@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-echo "Debug: bootstrap.sh executed"
-
+echo "Debug: bootstrap.sh started"
 
 init() {
 	sudo apt update --yes #&& sudo apt install vim --yes
@@ -14,24 +13,6 @@ install_git() {
 	#TODO: Why the strange repo for getting git?
 }
 
-install_python() {
-	version=$1
-	sudo apt install python3.9
-	# sudo apt-get install build-essential --yes
-	# sudo apt install -y make
-    # sudo apt-get install -y libssl-dev openssl
-	
-	# #This feels strange: why not use apt to install python?
-    # wget https://www.python.org/ftp/python/$version/Python-$version.tgz
-    # tar xzvf Python-$version.tgz
-    # cd Python-$version
-    # ./configure
-    # make
-    # sudo make install
-}
-
-
-
 install_spack(){
     # Apparently I need to go to this directory first?
 	cd  /home/vagrant
@@ -42,8 +23,13 @@ install_spack(){
 	#. spack/share/spack/setup-env.sh
 }
 
+# Make sure we are in the correct path
+cd /home/vagrant
+
 init
 install_git
 install_spack
+
+#git clone --branch ebrains-24-04 https://gitlab.ebrains.eu/ri/tech-hub/platform/esd/ebrains-spack-builds.git
 
 echo "Debug: bootstrap.sh executed completely"
