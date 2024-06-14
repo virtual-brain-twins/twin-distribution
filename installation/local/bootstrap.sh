@@ -1,3 +1,13 @@
+#!/usr/bin/env bash
+
+# Use single quotes instead of double quotes to make it work with special-character passwords
+PASSWORD='12345678'
+PROJECTFOLDER='myproject'
+
+mkdir test
+
+echo "this is a test"
+
 #!/bin/bash
 
 install_python() {
@@ -123,8 +133,8 @@ install_tvb_web() {
 
 
 init
-# install_python 3.11.8
+install_python 3.11.8
 install_pip
 install_git
-install_docker
-install_conda_env 3.10
+#install_docker
+#install_conda_env 3.10
