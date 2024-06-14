@@ -7,8 +7,10 @@ VAGRANTFILE_API_VERSION = "2"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Every Vagrant virtual environment requires a box to build off of.
-  config.vm.box = "ubuntu/trusty64"
+  #config.vm.box = "ubuntu/trusty64"  # Works
+  config.vm.box = "ubuntu/focal64"
   ### "ubuntu/bionic64" Cause problems on windows 10
+  ### generic/ubuntu2204
   config.vm.define "twin-ubuntu"
   
   # Create a private network, which allows host-only access to the machine using a specific IP.
