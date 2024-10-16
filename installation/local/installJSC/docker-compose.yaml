@@ -22,6 +22,14 @@ services:
       POSTGRES_DATABASE: guacamole_db
       POSTGRES_USER: guacamole_user
       POSTGRES_PASSWORD: some_password
+
+      OPENID_AUTHORIZATION_ENDPOINT: https://keycloak.codemart.ro/realms/TVB/protocol/openid-connect/auth
+      OPENID_JWKS_ENDPOINT: https://keycloak.codemart.ro/realms/TVB/protocol/openid-connect/certs
+      OPENID_ISSUER: https://keycloak.codemart.ro/realms/TVB
+      OPENID_CLIENT_ID: guacamole-client
+      OPENID_REDIRECT_URI: http://localhost:8080/guacamole
+      EXTENSION_PRIORITY: "openid"
+
     ports:
       - "8080:8080"
 
