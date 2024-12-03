@@ -4,50 +4,127 @@ echo "Debug: bootstrap.sh started"
 
 init() {
 	sudo apt update
-  sudo apt install build-essential ca-certificates coreutils curl environment-modules gfortran git gpg lsb-release python3 python3-distutils python3-venv unzip zip
+  sudo apt install -y build-essential ca-certificates coreutils curl environment-modules gfortran git gpg lsb-release python3 python3-distutils python3-venv unzip zip
+  echo 'export PATH=$PATH:/home/vagrant/.local/bin' >> /home/vagrant/.profile
+  source /home/vagrant/.profile
+  sudo timedatectl set-timezone Europe/Bucharest
+  sudo apt install jq --yes
 }
 
 install_git() {
-#  sudo add-apt-repository ppa:git-core/ppa --yes
 	sudo apt-get install git --yes
-	#TODO: Why the strange repo for getting git?
 	echo "Git installed"
 }
 
 install_jupyterlab(){
-  echo "Jupyterlab 4 installed"
+  conda install -c conda-forge jupyterlab="4.*" -y
+  echo "Jupyter lab 4 installed"
 }
 
 install_spack(){
-  # Apparently I need to go to this directory first?
-	cd  /home/vagrant
-	#https://spack-tutorial.readthedocs.io/en/latest/tutorial_basics.html
-	# git clone --depth=100 --branch=releases/v0.22 https://github.com/spack/spack.git ~/spack
-	git clone --depth 1 -c advice.detachedHead=false -c feature.manyFiles=true --branch v0.20.0 https://github.com/spack/spack
-	echo "Cloned spack"
-	cd ~/pack
-  . share/spack/setup-env.sh
-  # spack repo add ebrains-spack-builds
-  spack env create -d ebrains-spack-builds/
-  echo "Created spack env"
-#  export SYSTEMNAME=<your-system-name>
-#  mkdir ebrains-spack-builds/site-config/$SYSTEMNAME
-#  spack env activate ebrains-spack-builds
-#  spack install --fresh
+  echo 'Spack install'
+  git clone --depth 1 -c advice.detachedHead=false -c feature.manyFiles=true --branch v0.21.1 https://github.com/spack/spack
 
-  # copy any site-specific .yaml files inside the new dir
+  echo "Cloned spack"
+  . spack/share/spack/setup-env.sh
+  echo 'export PATH="/home/vagrant/spack/bin:$PATH"' >> /home/vagrant/.bashrc
+  echo 'source /home/vagrant/spack/share/spack/setup-env.sh' >> /home/vagrant/.bashrc
+  source /home/vagrant/.bashrc
 
-	# add to path
-	#. spack/share/spack/setup-env.sh
+  sudo chown -R $USER:$USER /home/vagrant/spack/
+  echo "Install spack"
+  spack --version
 }
 
-# Make sure we are in the correct path
-cd /home/vagrant
+setup_spack_env(){
+  cd ~/shared
+  # Adding the twin env and the ebrains spack repo from where the libraries are installed
+  git clone https://vagrant-spack:glpat-f5GwpnvoZEiT8z3U55Jj@gitlab.ebrains.eu/adrianciu/twin-spack-env.git
+  git clone --branch master https://gitlab.ebrains.eu/ri/tech-hub/platform/esd/ebrains-spack-builds.git
+  export SYSTEMNAME='Twin_Brains'
+  echo 'export SYSTEMNAME="Twin_Brains"' >> /etc/profile.d/vagrant_env.sh
 
+  mkdir ./ebrains-spack-builds/site-config/$SYSTEMNAME
+  mkdir ./twin-spack-env/site-config
+  mkdir ./twin-spack-env/site-config/$SYSTEMNAME
+
+  sudo chown -R $USER:$USER /home/vagrant/spack
+  sudo chown -R $USER:$USER /home/vagrant/shared/twin-spack-env/
+  sudo chown -R $USER:$USER /home/vagrant/shared/ebrains-spack-builds/
+  #echo 'spack repo list | grep -q ebrains-spack-builds || spack repo add ~/shared/ebrains-spack-builds' >> /home/vagrant/.bashrc
+#  echo 'sudo chown -R $USER:$USER /home/vagrant/shared/ebrains-spack-builds/' >> /home/vagrant/.bashrc
+#  echo 'sudo chown -R $USER:$USER /home/vagrant/shared/twin-spack-env/' >> /home/vagrant/.bashrc
+  echo 'sudo chown -R $USER:$USER /home/vagrant/spack' >> /home/vagrant/.bashrc
+  echo 'spack env activate -p --without-view ~/shared/twin-spack-env' >> /home/vagrant/.bashrc
+
+  spack env activate -p twin-spack-env
+  #spack install --no-check-signature
+  # spack clean -a
+}
+
+install_miniconda(){
+  version=$1
+  set -e
+  if [ -d "/home/vagrant/miniconda3" ]; then
+      echo "Removing existing Miniconda installation at /home/vagrant/miniconda3"
+      rm -rf /home/vagrant/miniconda3
+  fi
+  wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+  chmod +x miniconda.sh
+  ./miniconda.sh -b -p /home/vagrant/miniconda3
+  eval "$(/home/vagrant/miniconda3/bin/conda shell.bash hook)"
+  rm miniconda.sh
+  echo 'export PATH="/home/vagrant/miniconda3/bin:$PATH"' >> /home/vagrant/.bashrc
+  source /home/vagrant/.bashrc
+
+  if command -v conda &>/dev/null; then
+      echo "Conda installed successfully"
+      conda --version
+  else
+      echo "Conda installation failed"
+      exit 1
+  fi
+
+  conda config --add channels conda-forge
+
+  echo "Creating conda environment with Python version: $version"
+
+  conda_create_command="/home/vagrant/miniconda3/bin/conda create --name twin_brains_env python=$version --yes"
+  echo "Running command: $conda_create_command"
+  eval $conda_create_command
+
+  source /home/vagrant/miniconda3/bin/activate twin_brains_env
+
+  if [ "$CONDA_DEFAULT_ENV" != "twin_brains_env" ]; then
+      echo "Failed to activate the conda environment"
+      exit 1
+  fi
+
+  installed_python_version=$(python --version)
+  echo "Installed Python version in the environment: $installed_python_version"
+
+  if [[ $installed_python_version != "Python $version"* ]]; then
+      echo "Python version mismatch. Expected: $version, Found: $installed_python_version"
+      exit 1
+  fi
+
+  echo 'source /home/vagrant/miniconda3/bin/deactivate' >> /home/vagrant/.bashrc
+  echo 'source /home/vagrant/miniconda3/bin/activate twin_brains_env' >> /home/vagrant/.bashrc
+}
+
+install_tvb_ext() {
+  pip install tvb-ext-bucket
+  pip install tvb-ext-unicore
+  pip install tvb-ext-xircuits
+}
+
+start_time=$(date +%s)
 init
 install_git
 install_spack
-
-#git clone --branch ebrains-24-04 https://gitlab.ebrains.eu/ri/tech-hub/platform/esd/ebrains-spack-builds.git
+setup_spack_env
 
 echo "Debug: bootstrap.sh executed completely"
+end_time=$(date +%s)
+runtime=$((end_time - start_time))
+echo "Total runtime: $runtime seconds"
