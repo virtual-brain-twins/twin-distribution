@@ -30,18 +30,18 @@ install_spack() {
 # This function is used to retrieve the ids of the container registries inside a repo and delete them all
 delete_all_registries() {
   # GET in a list all the container registries ids
-  REGISTRY_REPOS=$(curl --silent --header "PRIVATE-TOKEN: $REGISTRY_ACCESS_TOKEN" "$URL/projects/$PROJECT_ID/repositories" | jq -r '.[].id')
+  REGISTRY_REPOS=$(curl --silent --header "PRIVATE-TOKEN: $REGISTRY_PASSWORD" "$URL/projects/$PROJECT_ID/repositories" | jq -r '.[].id')
   # Delete each container registry
   for REPO_ID in $REGISTRY_REPOS; do
       echo "Deleting container registry repository ID: $REPO_ID"
-      curl --silent --request DELETE --header "PRIVATE-TOKEN: $REGISTRY_ACCESS_TOKEN" "$URL/projects/$PROJECT_ID/repositories/$REPO_ID"
+      curl --silent --request DELETE --header "PRIVATE-TOKEN: $REGISTRY_PASSWORD" "$URL/projects/$PROJECT_ID/repositories/$REPO_ID"
   done
 }
 
 cache_generate() {
   cd /home/vagrant/shared || exit
   # Clone the ebrains-spack-builds and twin-spack-env repositories
-  git clone https://$SPACK_ENV_TOKEN@gitlab.ebrains.eu/adrianciu/twin-spack-env.git
+  git clone https://gitlab.ebrains.eu/adrianciu/twin-spack-env.git
   git clone --branch master https://gitlab.ebrains.eu/ri/tech-hub/platform/esd/ebrains-spack-builds.git
   # Adding permissions to those repositories
   sudo chown -R $USER:$USER ./twin-spack-env/
@@ -54,6 +54,7 @@ cache_generate() {
   spack install --fresh
   echo 'Installed fresh all packages'
   # Adding the mirror to push the build caches
+  spack mirror add twin_spack_cache_registry oci://docker-registry.ebrains.eu/twin-spack-cache/cache:latest --oci-username=$REGISTRY_USERNAME --oci-password=$REGISTRY_PASSWORD
   spack buildcache push -u twin_spack_cache_registry
   status_code=$?
   spack env deactivate

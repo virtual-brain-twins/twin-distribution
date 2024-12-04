@@ -31,7 +31,7 @@ install_spack(){
 setup_spack_env(){
   cd /home/vagrant/shared || exit
   # Clone the ebrains-spack-builds and twin-spack-env repositories
-  git clone https://$SPACK_ENV_TOKEN@gitlab.ebrains.eu/adrianciu/twin-spack-env.git
+  git clone https://gitlab.ebrains.eu/adrianciu/twin-spack-env.git
   git clone --branch master https://gitlab.ebrains.eu/ri/tech-hub/platform/esd/ebrains-spack-builds.git
   export SYSTEMNAME='Twin_Brains'
   echo 'export SYSTEMNAME="Twin_Brains"' >> /etc/profile.d/vagrant_env.sh
@@ -46,6 +46,7 @@ setup_spack_env(){
 
   spack env activate -p twin-spack-env
   # Install from buildcache the libraries
+  spack mirror add twin_spack_cache_registry oci://docker-registry.ebrains.eu/twin-spack-cache/cache:latest --oci-username=$REGISTRY_USERNAME --oci-password=$REGISTRY_PASSWORD
   spack install --no-check-signature
 
   # Clean up

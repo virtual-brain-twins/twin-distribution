@@ -36,16 +36,20 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       vb.name = "VM_twin_buildcache"
     
       # Customize the amount of memory on the VM:
-      vb.memory = "16384" # "25600"
-      
+      vb.memory = "20480"
+
       #number of cpus
-      vb.cpus = "10"
+      vb.cpus = "12"
 
   config.vm.boot_timeout = 86400  # 24h
-  config.disksize.size = "60GB" # vagrant plugin install vagrant-disksize
+  config.disksize.size = "100GB" # vagrant plugin install vagrant-disksize
+
   end
 
   # Define the bootstrap file: A (shell) script that runs after first setup of your box (= provisioning)
-  config.vm.provision :shell, path: "./oci_cache.sh"
+  config.vm.provision("shell", path: "oci_cache.sh", env: {
+        "REGISTRY_USERNAME" => ENV['REGISTRY_USERNAME'],
+        "REGISTRY_PASSWORD" => ENV['REGISTRY_PASSWORD']
+    })
 
 end
