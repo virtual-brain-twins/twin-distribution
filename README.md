@@ -44,3 +44,7 @@ You can start the local installation by running the following command in /instal
 
 In order to connect to the newly created VM, you need to run the following command in /installation/local/VM:
 - vagrant ssh
+
+## Acknowledgments
+
+This project has received funding from the European Union’s Research and Innovation Program Horizon Europe under Grant Agreement No. 101137289 (Virtual Brain Twin Project).
