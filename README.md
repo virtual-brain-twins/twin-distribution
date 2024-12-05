@@ -29,6 +29,8 @@ Hardware prerequisites allocated to the Ubuntu VM for the installation of the pa
 
 This hardware may vary depending on what package is installed in the spack environment.
 
+You can directly download the VM to attach it to VirtualBox.
+
 ## Developer:
 
 Hardware prerequisites allocated to the Ubuntu VM:
