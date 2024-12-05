@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-source ../commons/ubuntu_init.sh
-source ../commons/spack_install.sh
-
 URL="https://docker-registry.ebrains.eu/api/v2.0"
 PROJECT_ID=twin-spack-cache
 
@@ -51,6 +48,7 @@ cache_generate() {
 }
 
 cd /home/vagrant || exit
-init
-install_spack
-cache_generate
+. ./commons/ubuntu_init.sh
+#init
+#install_spack
+#cache_generate
