@@ -1,31 +1,7 @@
+#!/usr/bin/env bash
+
 URL="https://docker-registry.ebrains.eu/api/v2.0"
 PROJECT_ID=twin-spack-cache
-
-# Essential for ubuntu
-init() {
-	sudo apt update
-  sudo apt install -y build-essential ca-certificates coreutils curl environment-modules gfortran git gpg lsb-release python3 python3-distutils python3-venv unzip zip
-  echo 'export PATH=$PATH:/home/vagrant/.local/bin' >> /home/vagrant/.profile
-  source /home/vagrant/.profile
-  sudo timedatectl set-timezone Europe/Bucharest
-  sudo apt install jq --yes
-}
-
-install_spack() {
-  # Spack installation according to the official documentation.
-  echo 'Spack install'
-  git clone --depth 1 -c advice.detachedHead=false -c feature.manyFiles=true --branch v0.21.1 https://github.com/spack/spack
-
-  echo "Cloned spack"
-  . spack/share/spack/setup-env.sh
-  echo 'export PATH="/home/vagrant/spack/bin:$PATH"' >> /home/vagrant/.bashrc
-  echo 'source /home/vagrant/spack/share/spack/setup-env.sh' >> /home/vagrant/.bashrc
-
-  sudo chown -R $USER:$USER /home/vagrant/spack/
-  echo "Install spack"
-  spack --version
-  source /home/vagrant/.bashrc
-}
 
 # This function is used to retrieve the ids of the container registries inside a repo and delete them all
 delete_all_registries() {
@@ -70,7 +46,16 @@ cache_generate() {
 
 }
 
+start_time=$(date +%s)
 cd /home/vagrant || exit
+source ./shared/commons/bootstrap.sh
+source ~/.bashrc
 init
-install_spack
-cache_generate
+spack_install
+setup_spack_env
+cache_gecnerate
+
+echo "Debug: bootstrap.sh executed completely"
+end_time=$(date +%s)
+runtime=$((end_time - start_time))
+echo "Total runtime: $runtime seconds"
