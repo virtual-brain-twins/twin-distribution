@@ -20,14 +20,14 @@ cache_generate() {
   git clone https://gitlab.ebrains.eu/adrianciu/twin-spack-env.git
   git clone --branch master https://gitlab.ebrains.eu/ri/tech-hub/platform/esd/ebrains-spack-builds.git
   # Adding permissions to those repositories
-  sudo chown -R $USER:$USER ./twin-spack-env/
-  sudo chown -R $USER:$USER ./ebrains-spack-builds/
+  sudo chown -R $vagrant_user:$vagrant_user ./twin-spack-env/
+  sudo chown -R $vagrant_user:$vagrant_user ./ebrains-spack-builds/
 
   spack env activate -p twin-spack-env
   delete_all_registries
   echo 'Deleted old caching'
   # Installing all libraries in order to generate the build caching
-  spack install --fresh
+  spack install -v --fresh 2>log_error.txt | ts
   echo 'Installed fresh all packages'
   # Adding the mirror to push the build caches
   spack mirror add twin_spack_cache_registry oci://docker-registry.ebrains.eu/twin-spack-cache/cache:latest --oci-username=$REGISTRY_USERNAME --oci-password=$REGISTRY_PASSWORD

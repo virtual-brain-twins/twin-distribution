@@ -8,6 +8,8 @@ init() {
   source /home/vagrant/.profile
   sudo timedatectl set-timezone Europe/Bucharest
   sudo apt install jq --yes
+  sudo adduser vagrant_user
+  sudo usermod -aG sudo vagrant_user
 }
 
 spack_install() {
