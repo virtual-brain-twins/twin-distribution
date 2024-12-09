@@ -20,18 +20,20 @@ cache_generate() {
   git clone https://gitlab.ebrains.eu/adrianciu/twin-spack-env.git
   git clone --branch master https://gitlab.ebrains.eu/ri/tech-hub/platform/esd/ebrains-spack-builds.git
   # Adding permissions to those repositories
-  sudo chown -R $vagrant_user:$vagrant_user ./twin-spack-env/
-  sudo chown -R $vagrant_user:$vagrant_user ./ebrains-spack-builds/
+  sudo chown -R vagrant_user:vagrant_user ./twin-spack-env/
+  sudo chown -R vagrant_user:vagrant_user ./ebrains-spack-builds/
 
   spack env activate -p twin-spack-env
   delete_all_registries
   echo 'Deleted old caching'
   # Installing all libraries in order to generate the build caching
+  spack mirror add --autopush local_cache ./local_cache
+  # Adding the mirror to auto-push the build caches to a local directory after a package is installed
   spack install -v --fresh 2>log_error.txt | ts
   echo 'Installed fresh all packages'
-  # Adding the mirror to push the build caches
-  spack mirror add twin_spack_cache_registry oci://docker-registry.ebrains.eu/twin-spack-cache/cache:latest --oci-username=$REGISTRY_USERNAME --oci-password=$REGISTRY_PASSWORD
-  spack buildcache push -u twin_spack_cache_registry
+  # spack mirror add twin_spack_cache_registry oci://docker-registry.ebrains.eu/twin-spack-cache/cache:latest --oci-username=$REGISTRY_USERNAME --oci-password=$REGISTRY_PASSWORD
+  # Push the buildcache stored in the local directory to the OCI registry
+  spack buildcache push -u -d ./local_cache  oci://docker-registry.ebrains.eu/twin-spack-cache/cache:latest --oci-username=$REGISTRY_USERNAME --oci-password=$REGISTRY_PASSWORD
   status_code=$?
   spack env deactivate
 
@@ -49,11 +51,10 @@ cache_generate() {
 start_time=$(date +%s)
 cd /home/vagrant || exit
 source ./shared/commons/bootstrap.sh
-source ~/.bashrc
 init
 spack_install
-setup_spack_env
-cache_gecnerate
+source ~/.bashrc
+cache_generate
 
 echo "Debug: bootstrap.sh executed completely"
 end_time=$(date +%s)

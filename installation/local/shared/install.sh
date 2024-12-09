@@ -15,8 +15,8 @@ setup_spack_env(){
   mkdir ./twin-spack-env/site-config/$SYSTEMNAME
 
   # Adding permissions to those repositories
-  sudo chown -R $vagrant_user:$vagrant_user ./twin-spack-env/
-  sudo chown -R $vagrant_user:$vagrant_user ./ebrains-spack-builds/
+  sudo chown -R vagrant_user:vagrant_user ./twin-spack-env/
+  sudo chown -R vagrant_user:vagrant_user ./ebrains-spack-builds/
 
   spack env activate -p twin-spack-env
   # Install from buildcache the libraries
@@ -27,9 +27,9 @@ setup_spack_env(){
   spack clean -a
 
   # Ensures that the permissions to ebrains-spack-builds and twin-spack-env persist each time the VM is started
-  echo 'sudo chown -R $vagrant_user:$vagrant_user /home/vagrant/shared/ebrains-spack-builds/' >> /home/vagrant/.bashrc
-  echo 'sudo chown -R $vagrant_user:$vagrant_user /home/vagrant/shared/twin-spack-env/' >> /home/vagrant/.bashrc
-  echo 'sudo chown -R $vagrant_user:$vagrant_user /home/vagrant/spack' >> /home/vagrant/.bashrc
+  echo 'sudo chown -R vagrant_user:vagrant_user /home/vagrant/shared/ebrains-spack-builds/' >> /home/vagrant/.bashrc
+  echo 'sudo chown -R vagrant_user:vagrant_user /home/vagrant/shared/twin-spack-env/' >> /home/vagrant/.bashrc
+  echo 'sudo chown -R vagrant_user:vagrant_user /home/vagrant/spack' >> /home/vagrant/.bashrc
   # When vagrant starts, twin-spack-env is activated
   echo 'spack env activate -p /home/vagrant/shared/twin-spack-env' >> /home/vagrant/.bashrc
 }

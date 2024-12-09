@@ -6,18 +6,19 @@ VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # adding custom vagrant user
-    config.ssh.username = "vagrant_user"
+#     config.ssh.username = "vagrant_user"
+#     config.ssh.password = "vagrant_user"
     # Every Vagrant virtual environment requires a box to build off of.
     #config.vm.box = "ubuntu/trusty64"  # Works
     config.vm.box = "ubuntu/focal64"
     #   config.vm.box = "debian/bookworm64"
     ### "ubuntu/bionic64" Cause problems on windows 10
     ### generic/ubuntu2204
-    config.vm.define "VM_twin_buildcache"
+    config.vm.define "VM_twin_buildcache_refactoring"
 
     # Create a private network, which allows host-only access to the machine using a specific IP.
     # Static ip might easy deployment later on?
-    config.vm.network "private_network", ip: "192.168.33.23"
+    config.vm.network "private_network", ip: "192.168.33.27"
     # forwarded_port in order to be able to access jupyter lab from the VM
     #   config.vm.network "forwarded_port", ip: "192.168.33.23", guest: 8888, host: 8888
 
@@ -34,7 +35,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         # Display the VirtualBox GUI when booting the machine
         # vb.gui = true
         # name of the VirtualBox GUI
-        vb.name = "VM_twin_buildcache"
+        vb.name = "VM_twin_buildcache_refactoring"
 
         # Customize the amount of memory on the VM:
         vb.memory = "20480"
