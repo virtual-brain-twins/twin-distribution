@@ -47,7 +47,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Define the bootstrap file: A (shell) script that runs after first setup of your box (= provisioning)
   config.vm.provision("shell", path: "../shared/install.sh", env: {
         "REGISTRY_USERNAME" => ENV['REGISTRY_USERNAME'],
-        "REGISTRY_PASSWORD" => ENV['REGISTRY_PASSWORD']
+        "REGISTRY_PASSWORD" => ENV['REGISTRY_PASSWORD'],
+        "REGISTRY_HOST" => ENV['REGISTRY_HOST'],
+        "REGISTRY_PROJECT" => ENV['REGISTRY_PROJECT'],
+        "REGISTRY_CACHE_VERSION" => ENV['REGISTRY_CACHE_VERSION']
     })
 
 end

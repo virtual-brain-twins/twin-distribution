@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 URL="https://docker-registry.ebrains.eu/api/v2.0"
-PROJECT_ID=twin-spack-cache
+PROJECT_ID=$REGISTRY_PROJECT
 
 # This function is used to retrieve the ids of the container registries inside a repo and delete them all
 delete_all_registries() {
@@ -15,48 +15,50 @@ delete_all_registries() {
 }
 
 cache_generate() {
-  cd /home/vagrant/shared || exit
+  cd $HOME_PATH/shared || exit
   # Clone the ebrains-spack-builds and twin-spack-env repositories
   git clone https://gitlab.ebrains.eu/adrianciu/twin-spack-env.git
   git clone --branch master https://gitlab.ebrains.eu/ri/tech-hub/platform/esd/ebrains-spack-builds.git
   # Adding permissions to those repositories
-  sudo chown -R vagrant_user:vagrant_user ./twin-spack-env/
-  sudo chown -R vagrant_user:vagrant_user ./ebrains-spack-builds/
+  sudo chown -R $USER:$USER ./twin-spack-env/
+  sudo chown -R $USER:$USER ./ebrains-spack-builds/
 
   spack env activate -p twin-spack-env
-  delete_all_registries
-  echo 'Deleted old caching'
+  spack repo add ebrains-spack-builds
   # Installing all libraries in order to generate the build caching
-  spack mirror add --autopush local_cache ./local_cache
+  spack gpg init
+  spack gpg create vbt vbt@twin.com
+  mkdir $HOME_PATH/shared/local_cache
+  spack mirror add --autopush --signed local_cache $HOME_PATH/shared/local_cache
   # Adding the mirror to auto-push the build caches to a local directory after a package is installed
-  spack install -v --fresh 2>log_error.txt | ts
+  spack install -v --fresh 2> >(ts > log_generate_cache.txt)
   echo 'Installed fresh all packages'
-  # spack mirror add twin_spack_cache_registry oci://docker-registry.ebrains.eu/twin-spack-cache/cache:latest --oci-username=$REGISTRY_USERNAME --oci-password=$REGISTRY_PASSWORD
-  # Push the buildcache stored in the local directory to the OCI registry
-  spack buildcache push -u -d ./local_cache  oci://docker-registry.ebrains.eu/twin-spack-cache/cache:latest --oci-username=$REGISTRY_USERNAME --oci-password=$REGISTRY_PASSWORD
-  status_code=$?
-  spack env deactivate
-
-  if [ $status_code -ne 0 ]; then
-    echo "Status code: $status_code"
-    echo "Something went wrong when pushing the build cache to oci registry!"
-  else
-    echo "clean up"
-    rm -rf ebrains-spack-builds
-    rm -rf twin-spack-env
-  fi
-
 }
 
-start_time=$(date +%s)
-cd /home/vagrant || exit
-source ./shared/commons/bootstrap.sh
-init
-spack_install
-source ~/.bashrc
-cache_generate
 
-echo "Debug: bootstrap.sh executed completely"
-end_time=$(date +%s)
-runtime=$((end_time - start_time))
-echo "Total runtime: $runtime seconds"
+main(){
+  start_time=$(date +%s)
+
+  cd /home/vagrant || exit
+  source ./shared/commons/bootstrap.sh
+  source ./shared/commons/manage_build_cache.sh
+  init
+  source ~/.bashrc
+  spack_install
+  oras_install
+  source ~/.bashrc
+  cache_generate
+  registry_upload_build_cache
+  # Clean up the local buildcache folder
+  rm -rf $HOME_PATH/shared/local_cache
+  source ./shared/commons/utils.sh
+  delete_if_empty "log_generate_cache.txt"
+  delete_if_empty "log_oras.txt"
+
+  end_time=$(date +%s)
+  runtime=$((end_time - start_time))
+  echo "Total runtime: $runtime seconds"
+}
+
+main
+
