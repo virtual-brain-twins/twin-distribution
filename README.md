@@ -4,7 +4,7 @@
 
 Before starting, make sure you have the following tools installed:
 
-1. **VirtualBox**
+1. **VirtualBox** - version 7.0.20
    - [Download VirtualBox](https://www.virtualbox.org/wiki/Downloads)
 
 2. **VirtualBox**
@@ -28,6 +28,8 @@ Hardware prerequisites allocated to the Ubuntu VM for the installation of the pa
 - RAM: 16 GB
 
 This hardware may vary depending on what package is installed in the spack environment.
+
+You can directly download the VM to attach it to VirtualBox by importing it as an appliance. The username and password are both "vagrant".
 
 ## Developer:
 
