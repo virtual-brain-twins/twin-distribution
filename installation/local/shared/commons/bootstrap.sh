@@ -19,10 +19,11 @@ spack_install() {
 
   echo "Cloned spack"
   . spack/share/spack/setup-env.sh
+
+  # Grant the user permission to make changes via Spack
   echo "export PATH=\"${HOME_PATH}/spack/bin:\$PATH\"" >> $HOME_PATH/.bashrc
   echo "source $HOME_PATH/spack/share/spack/setup-env.sh" >> $HOME_PATH/.bashrc
   echo "source $HOME_PATH/spack/share/spack/setup-env.sh" >> /home/vagrant/.profile
-#  source $HOME_PATH/.bashrc
   sudo chown -R $USER:$USER $HOME_PATH/spack/
 
   source /home/vagrant/.bashrc

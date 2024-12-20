@@ -5,13 +5,9 @@
 VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-    # adding custom vagrant user
-#     config.ssh.username = "vagrant_user"
-#     config.ssh.password = "vagrant_user"
-    # Every Vagrant virtual environment requires a box to build off of.
-    #config.vm.box = "ubuntu/trusty64"  # Works
+    # Every Vagrant virtual environment requires a box to build.
     config.vm.box = "ubuntu/focal64"
-    ### "ubuntu/bionic64" Cause problems on windows 10
+
     config.vm.define "VM_twin"
 
     # Create a private network, which allows host-only access to the machine using a specific IP.
