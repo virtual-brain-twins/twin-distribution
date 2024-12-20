@@ -27,7 +27,7 @@ cache_generate() {
   spack repo add ebrains-spack-builds
   # Installing all libraries in order to generate the build caching
   spack gpg init
-  spack gpg create vbt vbt@twin.com
+  spack gpg create vbt science@codemart.ro
   mkdir $HOME_PATH/shared/local_cache
   spack mirror add --autopush --signed local_cache $HOME_PATH/shared/local_cache
   # Adding the mirror to auto-push the build caches to a local directory after a package is installed

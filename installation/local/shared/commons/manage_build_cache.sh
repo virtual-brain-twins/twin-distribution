@@ -9,7 +9,7 @@ registry_upload_build_cache(){
         --password-stdin \
         --disable-path-validation \
         $REGISTRY_HOST/$REGISTRY_PROJECT/cache:$package_name ${path} \
-        2> >(ts > ./shared/log_oras.txt)
+        2> >(ts > $HOME_PATH/shared/log_oras.txt)
         ret=$?
         if [ ${ret} -ne 0 ]; then
           echo "Uploading of \"$package_name\" to OCI cache failed."
@@ -46,7 +46,7 @@ registry_download_build_cache(){
           --username $REGISTRY_USERNAME \
           --password-stdin \
           $REGISTRY_HOST/$REGISTRY_PROJECT/cache:${artifact} \
-          2> >(ts > ./shared/log_oras.txt)
+          2> >(ts > $HOME_PATH/shared/log_oras.txt)
       ret=$?
       if [ $ret -ne 0 ]; then
           echo "Failed to pull artifact ${artifact}. Skipping..."

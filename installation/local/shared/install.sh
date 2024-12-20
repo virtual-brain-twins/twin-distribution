@@ -29,8 +29,15 @@ setup_spack_env(){
 
   # Install from buildcache the libraries
   spack mirror add twin_spack_cache $HOME_PATH/shared/local_cache
-  spack install --no-check-signature 2> >(ts > log_install.txt)
+  # install gpg keys
+  source $HOME_PATH/shared/commons/utils.sh
+  GPG_DIR=$HOME_PATH/shared/local_cache/build_cache/_pgp/
+  GPG_PUBLIC_KEY=$(extract_first_file "$GPG_DIR")
+  spack gpg trust $GPG_DIR/$GPG_PUBLIC_KEY
+
+  spack install  2> >(ts > log_install.txt)
   spack mirror rm twin_spack_cache
+
   # Clean up
   rm -rf $HOME_PATH/shared/local_cache
   source ./commons/utils.sh
