@@ -5,22 +5,23 @@
 VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+    # adding custom vagrant user
+#     config.ssh.username = "vagrant_user"
+#     config.ssh.password = "vagrant_user"
     # Every Vagrant virtual environment requires a box to build off of.
     #config.vm.box = "ubuntu/trusty64"  # Works
     config.vm.box = "ubuntu/focal64"
-    #   config.vm.box = "debian/bookworm64"
     ### "ubuntu/bionic64" Cause problems on windows 10
-    ### generic/ubuntu2204
-    config.vm.define "VM_twin_buildcache"
+    config.vm.define "VM_twin"
 
     # Create a private network, which allows host-only access to the machine using a specific IP.
     # Static ip might easy deployment later on?
-    config.vm.network "private_network", ip: "192.168.33.27"
+    #config.vm.network "private_network", ip: "192.168.33.22"
     # forwarded_port in order to be able to access jupyter lab from the VM
-    #   config.vm.network "forwarded_port", ip: "192.168.33.23", guest: 8888, host: 8888
+    config.vm.network "forwarded_port", ip: "192.168.33.22", guest: 8888, host: 8888
 
 
-    #   config.vm.network "private_network", type: "dhcp"
+    #config.vm.network "private_network", type: "dhcp"
 
     # Share an additional folder to the guest VM. The first argument is the path on the host to the actual folder.
     # The second argument is the path on the guest to mount the folder.
@@ -32,21 +33,19 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         # Display the VirtualBox GUI when booting the machine
         # vb.gui = true
         # name of the VirtualBox GUI
-        vb.name = "VM_twin_buildcache"
+        vb.name = "VM_twin"
 
         # Customize the amount of memory on the VM:
-        vb.memory = "16384"
+        vb.memory = "2048"
 
         #number of cpus
-        vb.cpus = "12"
+        vb.cpus = "2"
 
-    config.vm.boot_timeout = 86400  # 24h
-    config.disksize.size = "100GB" # vagrant plugin install vagrant-disksize
+  config.vm.boot_timeout = 86400  # 24h
+  end
 
-    end
-
-    # Define the bootstrap file: A (shell) script that runs after first setup of your box (= provisioning)
-    config.vm.provision("shell", path: "../shared/oci_cache.sh", env: {
+  # Define the bootstrap file: A (shell) script that runs after first setup of your box (= provisioning)
+  config.vm.provision("shell", path: "../shared/install.sh", env: {
         "REGISTRY_USERNAME" => ENV['REGISTRY_USERNAME'],
         "REGISTRY_PASSWORD" => ENV['REGISTRY_PASSWORD'],
         "REGISTRY_HOST" => ENV['REGISTRY_HOST'],
