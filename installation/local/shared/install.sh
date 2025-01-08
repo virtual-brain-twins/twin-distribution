@@ -6,7 +6,9 @@ setup_spack_env(){
   cd $HOME_PATH/shared || exit
   # Clone the ebrains-spack-builds and twin-spack-env repositories
   git clone https://gitlab.ebrains.eu/adrianciu/twin-spack-env.git
-  git clone --branch master https://gitlab.ebrains.eu/ri/tech-hub/platform/esd/ebrains-spack-builds.git
+  # git clone --branch master https://gitlab.ebrains.eu/ri/tech-hub/platform/esd/ebrains-spack-builds.git
+  # provisionally until ebrains-spack-builds is officially updated to spack version 0.24.dev0
+  git clone -b spack-packages-update-V-0.24.dev0 https://adrianciu:CUSTOM_ESB_PASSWORD@gitlab.ebrains.eu/adrianciu/ebrains-spack-builds.git
   export SYSTEMNAME='Twin_Brains'
   echo 'export SYSTEMNAME="Twin_Brains"' >> /etc/profile.d/vagrant_env.sh
 

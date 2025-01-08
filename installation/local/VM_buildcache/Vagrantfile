@@ -48,7 +48,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         "REGISTRY_PASSWORD" => ENV['REGISTRY_PASSWORD'],
         "REGISTRY_HOST" => ENV['REGISTRY_HOST'],
         "REGISTRY_PROJECT" => ENV['REGISTRY_PROJECT'],
-        "REGISTRY_CACHE_VERSION" => ENV['REGISTRY_CACHE_VERSION']
+        "REGISTRY_CACHE_VERSION" => ENV['REGISTRY_CACHE_VERSION'],
+        # provisionally until ebrains-spack-builds is officially updated to spack version 0.24.dev0
+        "CUSTOM_ESB_PASSWORD" => ENV['CUSTOM_ESB_PASSWORD']
     })
 
 end
