@@ -47,6 +47,14 @@ You can start the local installation by running the following command in /instal
 In order to connect to the newly created VM, you need to run the following command in /installation/local/VM:
 - vagrant ssh
 
+In order to create the build cache on OCI Registry you have:
+- find a suitable OCI Registry and save the host in the environmental variable $REGISTRY_HOST
+- create a project on OCI Registry and save the project name in the environmental variable $REGISTRY_PROJECT
+- create (if possible) a robot account which has access to the project and save its credentials in the environmental variables $REGISTRY_USERNAME and $REGISTRY_PASSWORD
+- define a version of you build cache and save it in the environmental variable $REGISTRY_CACHE_VERSION
+
+Those environmental variables will be provisioned by Vagrant into the VMs.
+
 ## Acknowledgments
 
 This project has received funding from the European Union’s Research and Innovation Program Horizon Europe under Grant Agreement No. 101137289 (Virtual Brain Twin Project).
