@@ -10,6 +10,9 @@ init() {
   source $HOME_PATH/.profile
   sudo timedatectl set-timezone Europe/Bucharest
   sudo apt install jq --yes
+
+  sudo apt install python3-pip
+  pip install oras
 }
 
 spack_install() {
