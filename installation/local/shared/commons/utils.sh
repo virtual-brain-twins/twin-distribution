@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 delete_if_empty() {
   local file_path="$1"
 

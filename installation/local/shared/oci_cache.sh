@@ -29,8 +29,10 @@ cache_generate() {
   spack gpg init
   spack gpg create vbt science@codemart.ro
   mkdir $HOME_PATH/shared/local_cache
-  spack mirror add --autopush --signed local_cache $HOME_PATH/shared/local_cache
+
   # Adding the mirror to auto-push the build caches to a local directory after a package is installed
+  spack mirror add --autopush --signed local_cache $HOME_PATH/shared/local_cache
+
   spack install -v --fresh 2> >(ts > log_generate_cache.txt)
   echo 'Installed fresh all packages'
 }
