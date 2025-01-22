@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+SPACK_VERSION_EBRAINS=v0.21.1
+
 # Ubuntu Essentials
 init() {
   HOME_PATH=/home/vagrant
@@ -15,7 +17,7 @@ init() {
 spack_install() {
   # Spack installation according to the official documentation.
   echo 'Installing Spack'
-  git clone -c feature.manyFiles=true --depth=2 https://github.com/spack/spack.git
+  git clone -c feature.manyFiles=true --depth=2 --branch $SPACK_VERSION_EBRAINS https://github.com/spack/spack.git
 
   echo "Cloned spack"
   . spack/share/spack/setup-env.sh

@@ -15,6 +15,48 @@ Before starting, make sure you have the following tools installed:
     This plugin is used to custom configure the disk size allocated to the VM created with Vagrant.
    - [Download vagrant-disksize](https://github.com/sprotheroe/vagrant-disksize)
 
+
+## Installation Pre-requisites
+
+The ````<checkout path>\virtualbraintwin\installation\.env```` file contains the environment variables required for the Vagrant files that are used to provision the virtual machines (VMs).
+Ensure that you edit the ````<checkout path>\virtualbraintwin\installation\.env```` file to match your environment.
+The following provides an explanation of the various environment variables:
+
+````
+   # OCI Registry Configuration
+   # =============================
+   # The following variables configure the OCI registry used for caching.
+   
+   # The hostname of the OCI registry. e.g. https://docker-registry.ebrains.eu
+   REGISTRY_HOST="https://docker-registry.ebrains.eu/harbor/projects"
+   
+   # The project name in the Docker registry.
+   REGISTRY_PROJECT="vbt-build-cache-test"
+   
+   # The username used for authentication with the Docker registry.
+   REGISTRY_USERNAME="robot$vbt-build-cache-test+user"
+   
+   # The password used for authentication with the Docker registry.
+   REGISTRY_PASSWORD="###ACCESS_TOKEN###"
+   
+   # The version of the cache in the Docker registry.
+   REGISTRY_CACHE_VERSION="1.0"
+   ````
+After setting the environment variables, please ensure to execute the following commands to apply the necessary environment variables:
+- Windows Command line
+   ````
+   call <checkout path>\virtualbraintwin\installation\export_env.bat
+   ````
+- Windows Powershell
+   ````
+   .\<checkout path>\virtualbraintwin\installation\export_env.ps1
+   ````
+- Linux Bash
+   ````
+   source <checkout path>\virtualbraintwin\installation\.env
+   ````
+
+
 ## User:
 
 Hardware prerequisites allocated to the Ubuntu VM for the installation of the packages from the buildcache:
@@ -46,14 +88,6 @@ You can start the local installation by running the following command in /instal
 
 In order to connect to the newly created VM, you need to run the following command in /installation/local/VM:
 - vagrant ssh
-
-In order to create the build cache on OCI Registry you have:
-- find a suitable OCI Registry and save the host in the environmental variable $REGISTRY_HOST
-- create a project on OCI Registry and save the project name in the environmental variable $REGISTRY_PROJECT
-- create (if possible) a robot account which has access to the project and save its credentials in the environmental variables $REGISTRY_USERNAME and $REGISTRY_PASSWORD
-- define a version of you build cache and save it in the environmental variable $REGISTRY_CACHE_VERSION
-
-Those environmental variables will be provisioned by Vagrant into the VMs.
 
 ## Acknowledgments
 

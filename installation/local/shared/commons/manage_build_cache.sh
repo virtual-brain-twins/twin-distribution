@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 registry_upload_build_cache(){
     push_failed=false
     for path in $(find $HOME_PATH/shared/local_cache -mindepth 1); do
