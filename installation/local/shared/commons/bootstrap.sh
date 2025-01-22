@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-SPACK_VERSION_EBRAINS=v0.21.1
+SPACK_VERSION_EBRAINS=v0.22.0
 
 # Ubuntu Essentials
 init() {

@@ -1,61 +1,66 @@
 # VirtualBrainTwin
 
-## Prerequisites
+## Installation Prerequisites
 
-Before starting, make sure you have the following tools installed:
+1. **Checkout the source code from the repository using the following command**
 
-1. **VirtualBox** - version 7.0.20
-   - [Download VirtualBox](https://www.virtualbox.org/wiki/Downloads)
+    ```bash
+    git clone https://gitlab.ebrains.eu/ri/projects-and-initiatives/virtualbraintwin/virtualbraintwin.git
+    ```
 
-2. **VirtualBox**
-   - [Download Vagrant](https://developer.hashicorp.com/vagrant/install?product_intent=vagrant)
+2. **Before you can start the Virtual Brain Twin project, you need to install the following prerequisite tools.**
 
-3. **Vagrant Disksize Plugin**
+   1. **VirtualBox** - version 7.0.20
+      - [Download VirtualBox](https://www.virtualbox.org/wiki/Downloads)
+
+   2. **VirtualBox**
+      - [Download Vagrant](https://developer.hashicorp.com/vagrant/install?product_intent=vagrant)
+
+   3. **Vagrant Disksize Plugin**
     
-    This plugin is used to custom configure the disk size allocated to the VM created with Vagrant.
-   - [Download vagrant-disksize](https://github.com/sprotheroe/vagrant-disksize)
+       This plugin is used to custom configure the disk size allocated to the VM created with Vagrant.
+      - [Download vagrant-disksize](https://github.com/sprotheroe/vagrant-disksize)
+      
+3. **Setting up the needed environment variables**
 
+    The ````<checkout path>\virtualbraintwin\installation\.env```` file contains the environment variables required for the Vagrant files that are used to provision the virtual machines (VMs).
+    Ensure that you edit the ````<checkout path>\virtualbraintwin\installation\.env```` file to match your environment.
+    The following provides an explanation of the various environment variables:
 
-## Installation Pre-requisites
-
-The ````<checkout path>\virtualbraintwin\installation\.env```` file contains the environment variables required for the Vagrant files that are used to provision the virtual machines (VMs).
-Ensure that you edit the ````<checkout path>\virtualbraintwin\installation\.env```` file to match your environment.
-The following provides an explanation of the various environment variables:
-
-````
-   # OCI Registry Configuration
-   # =============================
-   # The following variables configure the OCI registry used for caching.
+    ````
+       # OCI Registry Configuration
+       # =============================
+       # The following variables configure the OCI registry used for caching.
+       
+       # The hostname of the OCI registry. e.g. https://docker-registry.ebrains.eu
+       REGISTRY_HOST="https://docker-registry.ebrains.eu/harbor/projects"
+       
+       # The project name in the Docker registry.
+       REGISTRY_PROJECT="vbt-build-cache-test"
+       
+       # The username used for authentication with the Docker registry.
+       REGISTRY_USERNAME="robot$vbt-build-cache-test+user"
+       
+       # The password used for authentication with the Docker registry.
+       REGISTRY_PASSWORD="###ACCESS_TOKEN###"
+       
+       # The version of the cache in the Docker registry.
+       REGISTRY_CACHE_VERSION="1.0"
+    ````
    
-   # The hostname of the OCI registry. e.g. https://docker-registry.ebrains.eu
-   REGISTRY_HOST="https://docker-registry.ebrains.eu/harbor/projects"
-   
-   # The project name in the Docker registry.
-   REGISTRY_PROJECT="vbt-build-cache-test"
-   
-   # The username used for authentication with the Docker registry.
-   REGISTRY_USERNAME="robot$vbt-build-cache-test+user"
-   
-   # The password used for authentication with the Docker registry.
-   REGISTRY_PASSWORD="###ACCESS_TOKEN###"
-   
-   # The version of the cache in the Docker registry.
-   REGISTRY_CACHE_VERSION="1.0"
-   ````
-After setting the environment variables, please ensure to execute the following commands to apply the necessary environment variables:
-- Windows Command line
-   ````
-   call <checkout path>\virtualbraintwin\installation\export_env.bat
-   ````
-- Windows Powershell
-   ````
-   .\<checkout path>\virtualbraintwin\installation\export_env.ps1
-   ````
-- Linux Bash
-   ````
-   source <checkout path>\virtualbraintwin\installation\.env
-   ````
-
+    After setting the environment variables, please ensure to execute the following commands to apply the necessary environment variables:
+    - Windows Command line
+      ````
+      call <checkout path>\virtualbraintwin\installation\export_env.bat
+      ````
+    - Windows Powershell
+      ````
+      .\<checkout path>\virtualbraintwin\installation\export_env.ps1
+      ````
+    - Linux Bash
+      ````
+      source <checkout path>\virtualbraintwin\installation\.env
+      ````
 
 ## User:
 
