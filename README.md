@@ -28,12 +28,12 @@
     The following provides an explanation of the various environment variables:
 
     ````
-       # OCI Registry Configuration
+       # OCI Registry Configuration Sample
        # =============================
        # The following variables configure the OCI registry used for caching.
        
-       # The hostname of the OCI registry. e.g. https://docker-registry.ebrains.eu
-       REGISTRY_HOST="https://docker-registry.ebrains.eu/harbor/projects"
+       # The hostname of the OCI registry. e.g. docker-registry.ebrains.eu
+       REGISTRY_HOST="docker-registry.ebrains.eu"
        
        # The project name in the Docker registry.
        REGISTRY_PROJECT="vbt-build-cache-test"
@@ -59,7 +59,7 @@
       ````
     - Linux Bash
       ````
-      source <checkout path>\virtualbraintwin\installation\.env
+      export $(grep -v '^#' <checkout path>\virtualbraintwin\installation\.env | xargs)
       ````
 
 ## User:

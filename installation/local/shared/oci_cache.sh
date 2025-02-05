@@ -23,7 +23,6 @@ cache_generate() {
   sudo chown -R $USER:$USER ./twin-spack-env/
   sudo chown -R $USER:$USER ./ebrains-spack-builds/
 
-  spack env activate -p twin-spack-env
   spack repo add ebrains-spack-builds
   # Installing all libraries in order to generate the build caching
   spack gpg init
@@ -33,7 +32,7 @@ cache_generate() {
   # Adding the mirror to auto-push the build caches to a local directory after a package is installed
   spack mirror add --autopush --signed local_cache $HOME_PATH/shared/local_cache
 
-  spack install -v --fresh 2> >(ts > log_generate_cache.txt)
+  spack --env twin-spack-env install -v --j12 --fresh > log_generate_cache.txt
   echo 'Installed fresh all packages'
 }
 
