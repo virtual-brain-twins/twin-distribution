@@ -23,6 +23,7 @@ cache_generate() {
   sudo chown -R "$USER":"$USER" ./twin-spack-env/
   sudo chown -R "$USER":"$USER" ./ebrains-spack-builds/
 
+  spack env activate -p twin-spack-env
   spack repo add ebrains-spack-builds
   # Installing all libraries in order to generate the build caching
   spack gpg init
@@ -33,7 +34,7 @@ cache_generate() {
   spack mirror add --autopush --signed local_cache "$HOME_PATH"/shared/local_cache
 
   cpu_count=$(< /proc/cpuinfo grep -c processor)
-  spack --env twin-spack-env install -v --j "$cpu_count" --fresh >(ts > log_generate_cache.txt)
+  spack -v --j "$cpu_count" --fresh >(ts > log_generate_cache.txt)
   echo 'Installed fresh all packages'
 }
 
