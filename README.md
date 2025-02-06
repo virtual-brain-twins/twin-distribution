@@ -30,7 +30,7 @@
     ````
        # OCI Registry Configuration Sample
        # =============================
-       # The following variables configure the OCI registry used for caching.
+       # The following variables configure the Harbor docker OCI registry (EBRAINS) used for caching.
        
        # The hostname of the OCI registry. e.g. docker-registry.ebrains.eu
        REGISTRY_HOST="docker-registry.ebrains.eu"
@@ -47,6 +47,9 @@
        # The version of the cache in the Docker registry.
        REGISTRY_CACHE_VERSION="1.0"
     ````
+    _Note: In the case of a Harbor registry, a registry project (REGISTRY_PROJECT) must be created, and a robot account (REGISTRY_USERNAME & REGISTRY_PASSWORD) should be added to the project, as illustrated in the image below. For more details, please refer to the user manual: Harbor Documentation - [Create Robot Accounts](https://goharbor.io/docs/1.10/working-with-projects/project-configuration/create-robot-accounts/)._
+    
+    ![screenshot](docs/resources/robot_account.png)
    
     After setting the environment variables, please ensure to execute the following commands to apply the necessary environment variables:
     - Windows Command line
