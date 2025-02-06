@@ -34,7 +34,7 @@ cache_generate() {
   spack mirror add --autopush --signed local_cache "$HOME_PATH"/shared/local_cache
 
   cpu_count=$(< /proc/cpuinfo grep -c processor)
-  spack -v --j "$cpu_count" --fresh >(ts > log_generate_cache.txt)
+  spack install -v --j "$cpu_count" --fresh >(ts > log_generate_cache.txt)
   echo 'Installed fresh all packages'
 }
 
