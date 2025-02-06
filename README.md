@@ -89,13 +89,16 @@ Hardware prerequisites allocated to the Ubuntu VM:
 - RAM: 16 GB
 
 You can start the local build of spack packages that will be pushed to docker registry by running the following command in /installation/local/VM_buildcache:
-- vagrant up
+   - `vagrant up`
 
-You can start the local installation by running the following command in /installation/local/VM:
-- vagrant up
+You can start the local installation by running the following command in /installation/local/VM_user:
+   - `vagrant up`
+   - _Once the user VM is up and running, the user can access the JupyterLab UI through a web browser using the following URL: https://host_server_ip:8888/_
+   
 
-In order to connect to the newly created VM, you need to run the following command in /installation/local/VM:
-- vagrant ssh
+
+In order to connect to the newly created VM, you need to run the following command in /installation/local/VM_user:
+   - `vagrant ssh`
 
 ## Acknowledgments
 
