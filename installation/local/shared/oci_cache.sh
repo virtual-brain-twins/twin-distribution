@@ -20,20 +20,21 @@ cache_generate() {
   git clone https://gitlab.ebrains.eu/adrianciu/twin-spack-env.git
   git clone --branch master https://gitlab.ebrains.eu/ri/tech-hub/platform/esd/ebrains-spack-builds.git
   # Adding permissions to those repositories
-  sudo chown -R $USER:$USER ./twin-spack-env/
-  sudo chown -R $USER:$USER ./ebrains-spack-builds/
+  sudo chown -R "$USER":"$USER" ./twin-spack-env/
+  sudo chown -R "$USER":"$USER" ./ebrains-spack-builds/
 
   spack env activate -p twin-spack-env
   spack repo add ebrains-spack-builds
   # Installing all libraries in order to generate the build caching
   spack gpg init
   spack gpg create vbt science@codemart.ro
-  mkdir $HOME_PATH/shared/local_cache
+  mkdir -p "$HOME_PATH"/shared/local_cache
 
   # Adding the mirror to auto-push the build caches to a local directory after a package is installed
-  spack mirror add --autopush --signed local_cache $HOME_PATH/shared/local_cache
+  spack mirror add --autopush --signed local_cache "$HOME_PATH"/shared/local_cache
 
-  spack install -v --fresh 2> >(ts > log_generate_cache.txt)
+  cpu_count=$(< /proc/cpuinfo grep -c processor)
+  spack install -v --j "$cpu_count" --fresh >(ts > log_generate_cache.txt)
   echo 'Installed fresh all packages'
 }
 

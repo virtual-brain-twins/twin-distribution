@@ -28,12 +28,12 @@
     The following provides an explanation of the various environment variables:
 
     ````
-       # OCI Registry Configuration
+       # OCI Registry Configuration Sample
        # =============================
-       # The following variables configure the OCI registry used for caching.
+       # The following variables configure the Harbor docker OCI registry (EBRAINS) used for caching.
        
-       # The hostname of the OCI registry. e.g. https://docker-registry.ebrains.eu
-       REGISTRY_HOST="https://docker-registry.ebrains.eu/harbor/projects"
+       # The hostname of the OCI registry. e.g. docker-registry.ebrains.eu
+       REGISTRY_HOST="docker-registry.ebrains.eu"
        
        # The project name in the Docker registry.
        REGISTRY_PROJECT="vbt-build-cache-test"
@@ -47,6 +47,9 @@
        # The version of the cache in the Docker registry.
        REGISTRY_CACHE_VERSION="1.0"
     ````
+    _Note: In the case of a Harbor registry, a registry project (REGISTRY_PROJECT) must be created, and a robot account (REGISTRY_USERNAME & REGISTRY_PASSWORD) should be added to the project, as illustrated in the image below. For more details, please refer to the user manual: Harbor Documentation - [Create Robot Accounts](https://goharbor.io/docs/1.10/working-with-projects/project-configuration/create-robot-accounts/)._
+    
+    ![screenshot](docs/resources/robot_account.png)
    
     After setting the environment variables, please ensure to execute the following commands to apply the necessary environment variables:
     - Windows Command line
@@ -59,7 +62,7 @@
       ````
     - Linux Bash
       ````
-      source <checkout path>\virtualbraintwin\installation\.env
+      export $(grep -v '^#' <checkout path>\virtualbraintwin\installation\.env | xargs)
       ````
 
 ## User:
@@ -86,13 +89,16 @@ Hardware prerequisites allocated to the Ubuntu VM:
 - RAM: 16 GB
 
 You can start the local build of spack packages that will be pushed to docker registry by running the following command in /installation/local/VM_buildcache:
-- vagrant up
+   - `vagrant up`
 
-You can start the local installation by running the following command in /installation/local/VM:
-- vagrant up
+You can start the local installation by running the following command in /installation/local/VM_user:
+   - `vagrant up`
+   - _Once the user VM is up and running, the user can access the JupyterLab UI through a web browser using the following URL: https://host_server_ip:8888/_
+   
 
-In order to connect to the newly created VM, you need to run the following command in /installation/local/VM:
-- vagrant ssh
+
+In order to connect to the newly created VM, you need to run the following command in /installation/local/VM_user:
+   - `vagrant ssh`
 
 ## Acknowledgments
 
