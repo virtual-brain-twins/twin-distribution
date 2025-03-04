@@ -17,7 +17,7 @@ EOF
 while IFS='=' read -r name value; do
     # Skip empty lines and lines starting with #
     [[ -z "$name" || "$name" =~ ^# ]] && continue
-
+    echo "export $name=$value" >> ~/.bashrc
     # Export the environment variable
     export "$name=$value"
 done < .env
