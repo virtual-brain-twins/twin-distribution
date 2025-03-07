@@ -85,3 +85,16 @@ In your `Vagrantfile`, specify the box:
 
 ```ruby
 config.vm.box = "vbt/ubuntu"
+```
+
+### 9. Optional: For a new VBT Vagrant box release, the following command generated the checksum for the generated .box file:
+
+Powershell: 
+````powershell
+Get-FileHash "C:\path\to\vbt_ubuntu.box" -Algorithm SHA256
+````
+
+Bash: 
+````powershell
+sha256sum /mnt/c/path/to/vbt_ubuntu.box
+````
