@@ -6,8 +6,7 @@ VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # Every Vagrant virtual environment requires a box to build.
-    config.vm.box = "bento/ubuntu-22.04"
-    config.vm.box_version = "202502.21.0"
+    config.vm.box = "vbt/debian"
 
     config.vm.define "VM_vbt_user"
 
@@ -38,11 +37,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         BUILDCACHE_OCI_PASSWORD:Shellwords.escape(ENV['BUILDCACHE_OCI_PASSWORD']),
         BUILDCACHE_OCI_HOST:Shellwords.escape(ENV['BUILDCACHE_OCI_HOST']),
         BUILDCACHE_OCI_PROJECT:Shellwords.escape(ENV['BUILDCACHE_OCI_PROJECT']),
+        BUILDCACHE_OCI_VERSION:Shellwords.escape(ENV['BUILDCACHE_OCI_VERSION']),
 
         CONCRETIZE_OCI_USERNAME:Shellwords.escape(ENV['CONCRETIZE_OCI_USERNAME']),
         CONCRETIZE_OCI_PASSWORD:Shellwords.escape(ENV['CONCRETIZE_OCI_PASSWORD']),
         CONCRETIZE_OCI_HOST:Shellwords.escape(ENV['CONCRETIZE_OCI_HOST']),
         CONCRETIZE_OCI_PROJECT:Shellwords.escape(ENV['CONCRETIZE_OCI_PROJECT']),
+        CONCRETIZE_OCI_VERSION:Shellwords.escape(ENV['CONCRETIZE_OCI_VERSION']),
     }
   end
 

@@ -9,16 +9,18 @@ from dedal.utils.utils import set_bashrc_variable
 
 bashrc_path = '/home/vagrant/.bashrc'
 
-# todo add '\' before '$' in the OCI_USERNAME
+
 def set_env_vars():
     set_bashrc_variable('BUILDCACHE_OCI_HOST', os.getenv('BUILDCACHE_OCI_HOST'), bashrc_path=bashrc_path)
     set_bashrc_variable('BUILDCACHE_OCI_PASSWORD', os.getenv('BUILDCACHE_OCI_PASSWORD'), bashrc_path=bashrc_path)
     set_bashrc_variable('BUILDCACHE_OCI_PROJECT', os.getenv('BUILDCACHE_OCI_PROJECT'), bashrc_path=bashrc_path)
     set_bashrc_variable('BUILDCACHE_OCI_USERNAME', os.getenv('BUILDCACHE_OCI_USERNAME'), bashrc_path=bashrc_path)
+    set_bashrc_variable('BUILDCACHE_OCI_VERSION', os.getenv('BUILDCACHE_OCI_VERSION'), bashrc_path=bashrc_path)
     set_bashrc_variable('CONCRETIZE_OCI_HOST', os.getenv('CONCRETIZE_OCI_HOST'), bashrc_path=bashrc_path)
     set_bashrc_variable('CONCRETIZE_OCI_PASSWORD', os.getenv('CONCRETIZE_OCI_PASSWORD'), bashrc_path=bashrc_path)
     set_bashrc_variable('CONCRETIZE_OCI_PROJECT', os.getenv('CONCRETIZE_OCI_PROJECT'), bashrc_path=bashrc_path)
     set_bashrc_variable('CONCRETIZE_OCI_USERNAME', os.getenv('CONCRETIZE_OCI_USERNAME'), bashrc_path=bashrc_path)
+    set_bashrc_variable('CONCRETIZE_OCI_VERSION', os.getenv('CONCRETIZE_OCI_VERSION'), bashrc_path=bashrc_path)
 
 
 def create_cache():
@@ -36,9 +38,8 @@ def create_cache():
                                buildcache_dir=data_dir / 'binary_cache',
                                gpg=GpgConfig('vbt', 'science@codemart.ro'),
                                use_spack_global=False,
-                               # todo get from env vars the cache version for concretization and binary
-                               cache_version_build='v1',
-                               cache_version_concretize='v1')
+                               cache_version_build=os.getenv('BUILDCACHE_OCI_VERSION'),
+                               cache_version_concretize=os.getenv('CONCRETIZE_OCI_VERSION'))
     spack_manager = SpackManager(spack_config, use_cache=False)
 
     spack_manager.install_spack('0.23.1', bashrc_path=bashrc_path)

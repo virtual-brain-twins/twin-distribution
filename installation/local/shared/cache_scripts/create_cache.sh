@@ -2,8 +2,7 @@ main(){
   start_time=$(date +%s)
 
   cd /home/vagrant/ || exit
-  source ./shared/commons/bootstrap.sh
-  init
+  # The custom Linux distribution designed for the VBT is fully configured with all modifications from bootstrap.sh applied.
   git clone -b dev https://gitlab.ebrains.eu/ri/tech-hub/platform/esd/dedal.git
   cd ./dedal || exit
   pip install . --break-system-packages
