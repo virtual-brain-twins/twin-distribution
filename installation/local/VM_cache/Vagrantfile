@@ -8,6 +8,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.vm.box = "vbt/debian12"
     config.vm.box_version = "0.1.0"
 
+    config.vm.disk :disk, size: "80GB", name: "vagrant_disk"
+    config.disksize.size = "80GB" # vagrant plugin install vagrant-disksize
+
     config.vm.define "VM_vbt_cache"
 
     # Create a private network, which allows host-only access to the machine using DHCP.
@@ -20,15 +23,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         vb.name = "VM_vbt_cache"
 
         # Customize the amount of memory: MB on the VM:
-        vb.memory = "16384"
+        vb.memory = "10240"
 
         #number of cpus
-        vb.cpus = "12"
-
-    config.vm.boot_timeout = 86400  # 24h
-    config.disksize.size = "100GB" # vagrant plugin install vagrant-disksize
-
-
+        vb.cpus = "8"
     end
 
     # Define the bootstrap file: A (shell) script that runs after first setup of your box (= provisioning)
