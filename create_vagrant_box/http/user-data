@@ -1,0 +1,29 @@
+#cloud-config
+autoinstall:
+  version: 1
+  identity:
+    hostname: ubuntu-server
+    username: vagrant
+    password: $6$hCLAibHgtSW762gL$mhYwHombefeKBUutcZPYbQH57nsn6MxNYVsIqCrepmb1EqRe.K7nf5CvdAV0btCOwRPpM4ZXzhaIPqgPwAJgT/
+
+  ssh:
+    install-server: true
+    allow-pw: true
+  debug:
+    installer: true
+  locale: en_US.UTF-8
+  keyboard:
+    layout: us
+  storage:
+    layout:
+      name: lvm
+  snaps:
+    - name: juju
+    - name: lxd
+  packages:
+    - net-tools
+    - docker.io
+    - openssh-server
+  late-commands:
+    - curtin in-target -- bash -c "systemctl enable ssh"
+    - curtin in-target -- bash -c "systemctl enable docker"

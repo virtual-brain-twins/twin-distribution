@@ -8,9 +8,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.vm.box = "vbt/debian12"
     config.vm.box_version = "0.1.1"
 
-    config.vm.disk :disk, size: "80GB", name: "vagrant_disk"
-    config.disksize.size = "80GB" # vagrant plugin install vagrant-disksize
-
     config.vm.define "VM_vbt_cache"
 
     # Create a private network, which allows host-only access to the machine using DHCP.
