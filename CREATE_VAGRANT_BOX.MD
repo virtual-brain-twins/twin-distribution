@@ -1,4 +1,4 @@
-## Setting Up an Ubuntu Vagrant Box in VirtualBox
+## Setting Up an Ubuntu Vagrant Box in VirtualBox - Manual creation
 
 ### 1. Install Ubuntu Server in VirtualBox
 - Install **Ubuntu Server** (GUI is not needed since Vagrant uses SSH only).
@@ -63,7 +63,7 @@ Power up the VM and execute the following commands as `vagrant`:
 ``` 
 sudo -i
 mount /dev/cdrom /mnt  # Mount the CDROM
-/mnt/VBoxGuestAdditions.run  # Install Guest Additions
+/mnt/VBoxLinuxAdditions.run  # Install Linux Additions
 poweroff  # Shutdown the VM
 ```
 
@@ -98,3 +98,11 @@ Bash:
 ````powershell
 sha256sum /mnt/c/path/to/vbt_ubuntu.box
 ````
+
+
+## Setting Up an Ubuntu Vagrant Box in VirtualBox - Automate creation using Packer
+
+``` 
+packer build ubuntu.pkr.hcl
+```
+
