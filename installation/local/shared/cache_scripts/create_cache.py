@@ -27,7 +27,7 @@ def create_cache():
     vbt_spack_env_access_token = os.getenv('VBT_SPACK_ENV_ACCESS_TOKEN')
     set_env_vars()
     install_dir = Path('/home/vagrant/').resolve()
-    data_dir = install_dir / 'cashing'
+    data_dir = install_dir / 'caching'
     ebrains_spack_builds_git = 'https://gitlab.ebrains.eu/ri/tech-hub/platform/esd/ebrains-spack-builds.git'
     spack_env_git = f'https://oauth2:{vbt_spack_env_access_token}@gitlab.ebrains.eu/ri/projects-and-initiatives/virtualbraintwin/tools/vbt-spack-env.git'
     spack_config = SpackConfig(env=SpackDescriptor('vbt-spack-env', data_dir, spack_env_git),

@@ -6,10 +6,7 @@ VAGRANTFILE_API_VERSION = "2"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # Every Vagrant virtual environment requires a box to build.
     config.vm.box = "vbt/debian12"
-    config.vm.box_version = "0.1.0"
-
-    config.vm.disk :disk, size: "80GB", name: "vagrant_disk"
-    config.disksize.size = "80GB" # vagrant plugin install vagrant-disksize
+    config.vm.box_version = "0.1.1"
 
     config.vm.define "VM_vbt_cache"
 
@@ -26,7 +23,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         vb.memory = "10240"
 
         #number of cpus
-        vb.cpus = "8"
+        vb.cpus = "10"
     end
 
     # Define the bootstrap file: A (shell) script that runs after first setup of your box (= provisioning)
