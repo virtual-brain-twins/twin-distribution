@@ -61,6 +61,10 @@
        
        # The password used for authentication with the Docker registry.
        BUILDCACHE_OCI_HOST="###ACCESS_TOKEN###"
+       
+       # The password used for cloning the vbt-spack-env repo
+       # =============================
+       VBT_SPACK_ENV_ACCESS_TOKEN="###ACCESS_TOKEN###"
 
 For both concretization and binary caches, the cache version can be changed via the attributes ```cache_version_concretize``` and ```cache_version_build```. 
 The default values are ```v1```.
