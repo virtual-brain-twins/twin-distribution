@@ -6,9 +6,10 @@ VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # Every Vagrant virtual environment requires a box to build.
-    config.vm.box = "ubuntu/focal64"
+    config.vm.box = "vbt/debian12"
+    config.vm.box_version = "0.1.1"
 
-    config.vm.define "VM_twin"
+    config.vm.define "VM_vbt_user"
 
     # Create a private network, which allows host-only access to the machine using DHCP.
     # Static ip might easy deployment later on?
@@ -18,7 +19,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     config.vm.provider "virtualbox" do |vb|
         # name of the VirtualBox GUI
-        vb.name = "VM_twin"
+        vb.name = "VM_vbt_user"
 
         # Customize the amount of memory on the VM:
         vb.memory = "2048"
@@ -33,11 +34,19 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision "shell" do |shell|
     shell.path = "../shared/install.sh"
     shell.env = {
-        REGISTRY_USERNAME:Shellwords.escape(ENV['REGISTRY_USERNAME']),
-        REGISTRY_PASSWORD:Shellwords.escape(ENV['REGISTRY_PASSWORD']),
-        REGISTRY_HOST:Shellwords.escape(ENV['REGISTRY_HOST']),
-        REGISTRY_PROJECT:Shellwords.escape(ENV['REGISTRY_PROJECT']),
-        REGISTRY_CACHE_VERSION:Shellwords.escape(ENV['REGISTRY_CACHE_VERSION'])
+        BUILDCACHE_OCI_USERNAME:Shellwords.escape(ENV['BUILDCACHE_OCI_USERNAME']),
+        BUILDCACHE_OCI_PASSWORD:Shellwords.escape(ENV['BUILDCACHE_OCI_PASSWORD']),
+        BUILDCACHE_OCI_HOST:Shellwords.escape(ENV['BUILDCACHE_OCI_HOST']),
+        BUILDCACHE_OCI_PROJECT:Shellwords.escape(ENV['BUILDCACHE_OCI_PROJECT']),
+        BUILDCACHE_OCI_VERSION:Shellwords.escape(ENV['BUILDCACHE_OCI_VERSION']),
+
+        CONCRETIZE_OCI_USERNAME:Shellwords.escape(ENV['CONCRETIZE_OCI_USERNAME']),
+        CONCRETIZE_OCI_PASSWORD:Shellwords.escape(ENV['CONCRETIZE_OCI_PASSWORD']),
+        CONCRETIZE_OCI_HOST:Shellwords.escape(ENV['CONCRETIZE_OCI_HOST']),
+        CONCRETIZE_OCI_PROJECT:Shellwords.escape(ENV['CONCRETIZE_OCI_PROJECT']),
+        CONCRETIZE_OCI_VERSION:Shellwords.escape(ENV['CONCRETIZE_OCI_VERSION']),
+
+        VBT_SPACK_ENV_ACCESS_TOKEN:Shellwords.escape(ENV['VBT_SPACK_ENV_ACCESS_TOKEN']),
     }
   end
 

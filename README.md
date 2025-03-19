@@ -23,30 +23,48 @@
       
 3. **Setting up the needed environment variables**
 
-    The ````<checkout path>\virtualbraintwin\installation\.env```` file contains the environment variables required for the Vagrant files that are used to provision the virtual machines (VMs).
-    Ensure that you edit the ````<checkout path>\virtualbraintwin\installation\.env```` file to match your environment.
+    **Setting up the needed environment variables**
+    The ````<checkout path>\dedal\.env```` file contains the environment variables required for OCI registry used for caching.
+    Ensure that you edit the ````<checkout path>\dedal\.env```` file to match your environment.
     The following provides an explanation of the various environment variables:
 
-    ````
-       # OCI Registry Configuration Sample
+
+       # OCI Registry Configuration Sample for concretization caches
        # =============================
        # The following variables configure the Harbor docker OCI registry (EBRAINS) used for caching.
        
        # The hostname of the OCI registry. e.g. docker-registry.ebrains.eu
-       REGISTRY_HOST="docker-registry.ebrains.eu"
+       CONCRETIZE__OCI_HOST="docker-registry.ebrains.eu"
        
        # The project name in the Docker registry.
-       REGISTRY_PROJECT="vbt-build-cache-test"
+       CONCRETIZE__OCI_PROJECT="concretize_caches"
        
        # The username used for authentication with the Docker registry.
-       REGISTRY_USERNAME="robot$vbt-build-cache-test+user"
+       CONCRETIZE__OCI_USERNAME="robot$concretize-cache-test+user"
        
        # The password used for authentication with the Docker registry.
-       REGISTRY_PASSWORD="###ACCESS_TOKEN###"
+       CONCRETIZE__OCI_HOST="###ACCESS_TOKEN###"
+        
+
+       # OCI Registry Configuration Sample for binary caches
+       # =============================
+       # The following variables configure the Harbor docker OCI registry (EBRAINS) used for caching.
        
-       # The version of the cache in the Docker registry.
-       REGISTRY_CACHE_VERSION="1.0"
-    ````
+       # The hostname of the OCI registry. e.g. docker-registry.ebrains.eu
+       BUILDCACHE_OCI_HOST="docker-registry.ebrains.eu"
+       
+       # The project name in the Docker registry.
+       BUILDCACHE_OCI_PROJECT="binary-cache-test"
+       
+       # The username used for authentication with the Docker registry.
+       BUILDCACHE_OCI_USERNAME="robot$binary-cache-test+user"
+       
+       # The password used for authentication with the Docker registry.
+       BUILDCACHE_OCI_HOST="###ACCESS_TOKEN###"
+
+For both concretization and binary caches, the cache version can be changed via the attributes ```cache_version_concretize``` and ```cache_version_build```. 
+The default values are ```v1```.
+
     _Note: In the case of a Harbor registry, a registry project (REGISTRY_PROJECT) must be created, and a robot account (REGISTRY_USERNAME & REGISTRY_PASSWORD) should be added to the project, as illustrated in the image below. For more details, please refer to the user manual: Harbor Documentation - [Create Robot Accounts](https://goharbor.io/docs/1.10/working-with-projects/project-configuration/create-robot-accounts/)._
     
     ![screenshot](docs/resources/robot_account.png)
