@@ -9,11 +9,15 @@ from vbt_config import user, home_path, set_env_vars, install_dir, data_dir, spa
 
 if __name__ == "__main__":
     set_env_vars()
-    append_command_to_file(command=f'sudo chown -R {user}:{user} {home_path}/spack', file_path=f'{home_path}/.bashrc')
-    append_command_to_file(command=f'sudo chown -R {user}:{user} {home_path}/caching/ebrains-spack-builds',
-                           file_path=f'{home_path}/.bashrc')
-    append_command_to_file(command=f'sudo chown -R {user}:{user} {home_path}/caching/vbt-spack-env',
-                           file_path=f'{home_path}/.bashrc')
+    if home_path:
+        append_command_to_file(command=f'sudo chown -R {user}:{user} {home_path}/spack',
+                               file_path=f'{home_path}/.bashrc')
+        append_command_to_file(command=f'sudo chown -R {user}:{user} {home_path}/caching/ebrains-spack-builds',
+                               file_path=f'{home_path}/.bashrc')
+        append_command_to_file(command=f'sudo chown -R {user}:{user} {home_path}/caching/vbt-spack-env',
+                               file_path=f'{home_path}/.bashrc')
+        append_command_to_file(command=f'spack env activate -p {home_path}/caching/vbt-spack-env',
+                               file_path=f'{home_path}/.bashrc')
     spack_config = SpackConfig(env=SpackDescriptor('vbt-spack-env', data_dir, spack_env_git),
                                repos=[SpackDescriptor('ebrains-spack-builds', data_dir, ebrains_spack_builds_git)],
                                install_dir=install_dir,
@@ -30,6 +34,4 @@ if __name__ == "__main__":
     spack_operation.setup_spack_env()
     spack_operation.concretize_spack_env()
     spack_operation.install_packages(os.cpu_count())
-    append_command_to_file(command=f'spack env activate -p {home_path}/caching/vbt-spack-env',
-                           file_path=f'{home_path}/.bashrc')
     os.system("exec bash")
