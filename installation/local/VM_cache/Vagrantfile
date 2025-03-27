@@ -6,12 +6,10 @@ VAGRANTFILE_API_VERSION = "2"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # Every Vagrant virtual environment requires a box to build.
     config.vm.box = "vbt/debian12"
-    config.vm.box_version = "0.1.1"
+    config.vm.box_version = "0.1.2"
 
     config.vm.define "VM_vbt_cache"
 
-    # Create a private network, which allows host-only access to the machine using DHCP.
-    # Static ip might easy deployment later on?
     config.vm.network "public_network", use_dhcp_assigned_default_route: true
 
     config.vm.synced_folder File.join(Dir.pwd, "../shared"), "/home/vagrant/shared"
@@ -28,7 +26,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     # Define the bootstrap file: A (shell) script that runs after first setup of your box (= provisioning)
     config.vm.provision "shell" do |shell|
-        shell.path = "../shared/cache_scripts/create_cache.sh"
+        shell.path = "../shared/vbt.sh"
+        shell.args = "create_cache.py"
         shell.env = {
             BUILDCACHE_OCI_USERNAME:Shellwords.escape(ENV['BUILDCACHE_OCI_USERNAME']),
             BUILDCACHE_OCI_PASSWORD:Shellwords.escape(ENV['BUILDCACHE_OCI_PASSWORD']),
