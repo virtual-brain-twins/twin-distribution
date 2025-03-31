@@ -1,5 +1,6 @@
 stages:
   - build
+  - release
 
 variables:
   DEBIAN_FRONTEND: noninteractive
@@ -22,7 +23,7 @@ build-cache:
 
 create-box:
   image: ubuntu:24.04
-  stage: build
+  stage: release
   id_tokens:
     SITE_ID_TOKEN:
       aud: "https://gitlab.jsc.fz-juelich.de"
@@ -34,17 +35,8 @@ create-box:
     - shell
   before_script:
     # install virtual box on the Ci runner
-    - apt-get update
-    - apt-get install -y wget gnupg2 curl lsb-release   software-properties-common
-    - echo "Adding VirtualBox GPG key..."
-    - wget -q https://www.virtualbox.org/download/oracle_vbox_2016.asc -O- | gpg --dearmor | tee /usr/share/keyrings/virtualbox.gpg > /dev/null
-    - echo "deb [arch=amd64 signed-by=/usr/share/keyrings/virtualbox.gpg] https://download.virtualbox.org/virtualbox/debian jammy contrib" > /etc/apt/sources.list.d/virtualbox.list
-
-    - apt-get update
-    - apt-get install -y gcc make perl dkms linux-headers-$(uname -r)
-
-    - echo "Installing VirtualBox 7.0.20..."
-    - apt-get install -y virtualbox-7.0
+    - chmod +x ./installation/local/shared/commons/release_tools.sh
+    - ./installation/local/shared/commons/release_tools.sh
 
     - echo "VirtualBox version:"
     - vboxmanage --version

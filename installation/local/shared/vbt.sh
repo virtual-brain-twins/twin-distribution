@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-
+set -e
 start_time=$(date +%s)
 cd $2 || exit
 # The custom Linux distribution designed for the VBT is fully configured with all modifications from bootstrap.sh applied.
-git clone https://gitlab.ebrains.eu/ri/tech-hub/platform/esd/dedal.git
+git clone -b VT-101-spack-find https://gitlab.ebrains.eu/ri/tech-hub/platform/esd/dedal.git
 cd ./dedal || exit
 pip install . --break-system-packages
 cd ../shared || exit

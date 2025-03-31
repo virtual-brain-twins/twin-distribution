@@ -1,5 +1,7 @@
 import os
 from pathlib import Path
+
+from dedal.model.SpackDescriptor import SpackDescriptor
 from dedal.utils.utils import set_bashrc_variable
 
 try:
@@ -17,8 +19,10 @@ concretization_dir = data_dir / 'concretize_cache'
 buildcache_dir = data_dir / 'binary_cache'
 
 ebrains_spack_builds_git = 'https://gitlab.ebrains.eu/ri/tech-hub/platform/esd/ebrains-spack-builds.git'
-# spack_env_git = f'https://oauth2:{vbt_spack_env_access_token}@gitlab.ebrains.eu/ri/projects-and-initiatives/virtualbraintwin/tools/vbt-spack-env.git'
-spack_env_git = f'https://oauth2:{vbt_spack_env_access_token}@gitlab.ebrains.eu/ri/projects-and-initiatives/virtualbraintwin/tools/test-spack-env.git'
+spack_env_git = f'https://oauth2:{vbt_spack_env_access_token}@gitlab.ebrains.eu/ri/projects-and-initiatives/virtualbraintwin/tools/vbt-spack-env.git'
+
+ebrains_repo = SpackDescriptor('ebrains-spack-builds', data_dir, ebrains_spack_builds_git)
+vbt_env = SpackDescriptor('vbt-spack-env', data_dir, spack_env_git)
 
 
 def set_env_vars():
