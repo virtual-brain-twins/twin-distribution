@@ -1,4 +1,5 @@
 stages:
+  - test
   - build
   - release
 
@@ -6,22 +7,68 @@ variables:
   DEBIAN_FRONTEND: noninteractive
   BOX_NAME: "vbt_debian12.box"
 
-build-cache:
+test-create-cache:
+  rules:
+    - if: '$CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "dev"'
+      when: always
+    - when: never
   image: python:3.11
-  stage: build
-  timeout: 14 hours
+  stage: test
+  timeout: 1 hours
   tags:
     - $DOCKER_RUNNER_TAG
   before_script:
     - chmod +x ./installation/local/shared/commons/bootstrap.sh
     - ./installation/local/shared/commons/bootstrap.sh
   script:
-    - ls --all
-    - echo $HOME_PATH
+    - chmod +x ./installation/local/shared/vbt.sh
+    - ./installation/local/shared/vbt.sh "create_cache.py" "./installation/local/"
+
+test-use-cache:
+  environment:
+    name: testing
+  rules:
+    - if: '$CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "dev"'
+      when: always
+    - when: never
+  image: python:3.11
+  stage: test
+  timeout: 1 hours
+  tags:
+    - $DOCKER_RUNNER_TAG
+  before_script:
+    - chmod +x ./installation/local/shared/commons/bootstrap.sh
+    - ./installation/local/shared/commons/bootstrap.sh
+  script:
+    - chmod +x ./installation/local/shared/vbt.sh
+    - ./installation/local/shared/vbt.sh "use_cache.py" "./installation/local/"
+
+build-cache:
+  environment:
+    name: caching
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "dev"'
+      when: always
+    - when: never
+  image: python:3.11
+  stage: build
+  timeout: 24 hours
+  tags:
+    - $DOCKER_RUNNER_TAG
+  before_script:
+    - chmod +x ./installation/local/shared/commons/bootstrap.sh
+    - ./installation/local/shared/commons/bootstrap.sh
+  script:
     - chmod +x ./installation/local/shared/vbt.sh
     - ./installation/local/shared/vbt.sh "create_cache.py" "./installation/local/"
 
 create-box:
+  environment:
+    name: caching
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: always
+    - when: never
   image: ubuntu:24.04
   stage: release
   id_tokens:
@@ -29,10 +76,7 @@ create-box:
       aud: "https://gitlab.jsc.fz-juelich.de"
   timeout: 2 hours
   tags:
-    - juwels
-    - jacamar
-    - login
-    - shell
+    - $SHELL_RUNNER_TAG
   before_script:
     # install virtual box on the Ci runner
     - chmod +x ./installation/local/shared/commons/release_tools.sh
@@ -53,3 +97,4 @@ create-box:
 #
 #  after_script:
 #    - vagrant destroy -f
+
