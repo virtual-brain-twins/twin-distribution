@@ -13,16 +13,17 @@ except OSError:
     bashrc_path = None
 
 vbt_spack_env_access_token = os.getenv('VBT_SPACK_ENV_ACCESS_TOKEN')
+vbt_spack_env_name = os.getenv('VBT_SPACK_ENV_NAME')
 install_dir = Path('./').resolve()
 data_dir = install_dir / 'caching'
 concretization_dir = data_dir / 'concretize_cache'
 buildcache_dir = data_dir / 'binary_cache'
 
 ebrains_spack_builds_git = 'https://gitlab.ebrains.eu/ri/tech-hub/platform/esd/ebrains-spack-builds.git'
-spack_env_git = f'https://oauth2:{vbt_spack_env_access_token}@gitlab.ebrains.eu/ri/projects-and-initiatives/virtualbraintwin/tools/vbt-spack-env.git'
+spack_env_git = f'https://oauth2:{vbt_spack_env_access_token}@gitlab.ebrains.eu/ri/projects-and-initiatives/virtualbraintwin/tools/{vbt_spack_env_name}.git'
 
 ebrains_repo = SpackDescriptor('ebrains-spack-builds', data_dir, ebrains_spack_builds_git)
-vbt_env = SpackDescriptor('vbt-spack-env', data_dir, spack_env_git)
+vbt_env = SpackDescriptor(vbt_spack_env_name, data_dir, spack_env_git)
 
 
 def set_env_vars():

@@ -5,7 +5,7 @@ from dedal.configuration.SpackConfig import SpackConfig
 from dedal.spack_factory.SpackOperationCreator import SpackOperationCreator
 
 from commons.utils import append_command_to_file
-from installation.local.shared.commons.utils import check_installed_all_spack_packages
+from commons.utils import check_installed_all_spack_packages
 from vbt_config import user, home_path, set_env_vars, install_dir, data_dir, bashrc_path, buildcache_dir, \
     concretization_dir, vbt_env, ebrains_repo
 
