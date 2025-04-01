@@ -5,17 +5,20 @@ from dedal.configuration.SpackConfig import SpackConfig
 from dedal.spack_factory.SpackOperationCreator import SpackOperationCreator
 
 from commons.utils import append_command_to_file
-from installation.local.shared.commons.utils import check_installed_all_spack_packages
+from commons.utils import check_installed_all_spack_packages
 from vbt_config import user, home_path, set_env_vars, install_dir, data_dir, bashrc_path, buildcache_dir, \
     concretization_dir, vbt_env, ebrains_repo
 
 if __name__ == "__main__":
-    set_env_vars()
-    append_command_to_file(command=f'sudo chown -R {user}:{user} {home_path}/spack', file_path=f'{home_path}/.bashrc')
-    append_command_to_file(command=f'sudo chown -R {user}:{user} {home_path}/caching/ebrains-spack-builds',
-                           file_path=f'{home_path}/.bashrc')
-    append_command_to_file(command=f'sudo chown -R {user}:{user} {home_path}/caching/vbt-spack-env',
-                           file_path=f'{home_path}/.bashrc')
+    if user:
+        set_env_vars()
+        append_command_to_file(command=f'sudo chown -R {user}:{user} {home_path}/spack', file_path=f'{home_path}/.bashrc')
+        append_command_to_file(command=f'sudo chown -R {user}:{user} {home_path}/caching/ebrains-spack-builds',
+                               file_path=f'{home_path}/.bashrc')
+        append_command_to_file(command=f'sudo chown -R {user}:{user} {home_path}/caching/vbt-spack-env',
+                               file_path=f'{home_path}/.bashrc')
+        append_command_to_file(command=f'spack env activate -p {home_path}/caching/vbt-spack-env',
+                               file_path=f'{home_path}/.bashrc')
     spack_config = SpackConfig(env=vbt_env,
                                repos=[ebrains_repo],
                                install_dir=install_dir,
@@ -32,8 +35,6 @@ if __name__ == "__main__":
     spack_operation.setup_spack_env()
     spack_operation.concretize_spack_env()
     spack_operation.install_packages(os.cpu_count())
-    append_command_to_file(command=f'spack env activate -p {home_path}/caching/vbt-spack-env',
-                           file_path=f'{home_path}/.bashrc')
     if not check_installed_all_spack_packages(Path('../').resolve() / data_dir / vbt_env.name, spack_operation):
         sys.exit(-1)
     os.system("exec bash")
