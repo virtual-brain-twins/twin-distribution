@@ -15,10 +15,11 @@ if __name__ == "__main__":
         spack_path = str(data_dir / 'spack')
         append_command_to_file(command=f'sudo chown -R {user}:{user} {spack_path}',
                                file_path=f'{home_path}/.bashrc')
-        ebrains_path = str(data_dir / 'ebrains-spack-builds')
-        append_command_to_file(command=f'sudo chown -R {user}:{user} {ebrains_path}',
+        ebrains_env_path = str(data_dir / 'ebrains-spack-builds')
+        append_command_to_file(command=f'sudo chown -R {user}:{user} {ebrains_env_path}',
                                file_path=f'{home_path}/.bashrc')
-        append_command_to_file(command=f'sudo chown -R {user}:{user} {data_dir / {vbt_spack_env_name} }',
+        vbt_env_path = str(data_dir / vbt_spack_env_name)
+        append_command_to_file(command=f'sudo chown -R {user}:{user} {vbt_env_path}',
                                file_path=f'{home_path}/.bashrc')
 
     spack_config = SpackConfig(env=vbt_env,
