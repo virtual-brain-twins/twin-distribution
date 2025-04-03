@@ -9,7 +9,7 @@ variables:
 
 test-create-cache:
   rules:
-    - if: '$CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "master"'
+    - if: '$CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "dev"'
       when: always
     - when: never
   image: python:3.11
@@ -33,7 +33,7 @@ test-use-cache:
   environment:
     name: testing
   rules:
-    - if: '$CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "master"'
+    - if: '$CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "dev"'
       when: always
     - when: never
   image: python:3.11
