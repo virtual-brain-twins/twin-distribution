@@ -4,6 +4,10 @@ from pathlib import Path
 from dedal.model.SpackDescriptor import SpackDescriptor
 from dedal.utils.utils import set_bashrc_variable
 
+user = None
+home_path = None
+bashrc_path = None
+
 try:
     user = os.getlogin()
     if user:
@@ -16,7 +20,10 @@ except OSError:
 
 vbt_spack_env_access_token = os.getenv('VBT_SPACK_ENV_ACCESS_TOKEN')
 vbt_spack_env_name = os.getenv('VBT_SPACK_ENV_NAME')
-install_dir = Path('./').resolve()
+if home_path:
+    install_dir = Path(f'{home_path}/').resolve()
+else:
+    install_dir = Path('../').resolve()
 data_dir = install_dir / 'caching'
 concretization_dir = data_dir / 'concretize_cache'
 buildcache_dir = data_dir / 'binary_cache'

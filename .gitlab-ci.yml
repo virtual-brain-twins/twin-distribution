@@ -65,12 +65,11 @@ build-cache:
 create-box:
   environment:
     name: caching
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "master"'
-      when: always
-    - when: never
   image: ubuntu:24.04
   stage: release
+  when: manual
+  except:
+    - tags
   id_tokens:
     SITE_ID_TOKEN:
       aud: "https://gitlab.jsc.fz-juelich.de"
@@ -94,7 +93,10 @@ create-box:
     paths:
       - $BOX_NAME
     expire_in: 1 week
-#
-#  after_script:
-#    - vagrant destroy -f
+
+
+release:
+  needs:
+    - job: create-box
+      artifacts: true
 
