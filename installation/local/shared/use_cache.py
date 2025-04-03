@@ -39,6 +39,6 @@ if __name__ == "__main__":
     if not check_installed_all_spack_packages(data_dir / vbt_env.name, spack_operation):
         sys.exit(-1)
     if user:
-        append_command_to_file(command=f'spack env activate -p {home_path}/caching/vbt-spack-env',
+        append_command_to_file(command=f'spack env activate -p {home_path}/caching/{vbt_spack_env_name}',
                                file_path=f'{home_path}/.bashrc')
     os.system("exec bash")
