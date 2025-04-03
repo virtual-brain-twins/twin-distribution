@@ -9,7 +9,7 @@ variables:
 
 test-create-cache:
   rules:
-    - if: '$CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "dev"'
+    - if: '$CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "master"'
       when: always
     - when: never
   image: python:3.11
@@ -28,7 +28,7 @@ test-use-cache:
   environment:
     name: testing
   rules:
-    - if: '$CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "dev"'
+    - if: '$CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "master"'
       when: always
     - when: never
   image: python:3.11
@@ -47,9 +47,7 @@ build-cache:
   environment:
     name: caching
   rules:
-    - if: '$CI_COMMIT_BRANCH == "dev"'
-      when: always
-    - when: never
+    - if: '$CI_PIPELINE_SOURCE == "schedule" && $OPERATION == "cache" && $CI_COMMIT_BRANCH == "master"'
   image: python:3.11
   stage: build
   timeout: 24 hours
@@ -71,6 +69,9 @@ create-box:
     - when: never
   image: ubuntu:24.04
   stage: release
+  when: manual
+#  except:
+#    - tags
   id_tokens:
     SITE_ID_TOKEN:
       aud: "https://gitlab.jsc.fz-juelich.de"
@@ -94,7 +95,10 @@ create-box:
     paths:
       - $BOX_NAME
     expire_in: 1 week
-#
-#  after_script:
-#    - vagrant destroy -f
+
+
+#release:
+#  needs:
+#    - job: create-box
+#      artifacts: true
 
