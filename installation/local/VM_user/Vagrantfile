@@ -12,7 +12,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.vm.define "VM_vbt_user"
 
     config.vm.network "public_network", use_dhcp_assigned_default_route: true
-    # forwarded_port in order to be able to access jupyter lab from the VM
     config.vm.network "forwarded_port", guest: 8888, host: 8888
 
     config.vm.synced_folder File.join(Dir.pwd, "../shared"), "/home/vagrant/shared"
@@ -33,7 +32,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Define the bootstrap file: A (shell) script that runs after first setup of your box (= provisioning)
   config.vm.provision "shell" do |shell|
     shell.path = "../shared/vbt.sh"
-    shell.args = "use_cache.py"
+    shell.args = "use_cache.py /home/vagrant/"
     shell.env = {
         BUILDCACHE_OCI_USERNAME:Shellwords.escape(ENV['BUILDCACHE_OCI_USERNAME']),
         BUILDCACHE_OCI_PASSWORD:Shellwords.escape(ENV['BUILDCACHE_OCI_PASSWORD']),
@@ -48,6 +47,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         CONCRETIZE_OCI_VERSION:Shellwords.escape(ENV['CONCRETIZE_OCI_VERSION']),
 
         VBT_SPACK_ENV_ACCESS_TOKEN:Shellwords.escape(ENV['VBT_SPACK_ENV_ACCESS_TOKEN']),
+        VBT_SPACK_ENV_NAME:Shellwords.escape(ENV['VBT_SPACK_ENV_NAME']),
     }
   end
 
