@@ -21,7 +21,7 @@ if __name__ == "__main__":
                                use_spack_global=False,
                                cache_version_build=os.getenv('BUILDCACHE_OCI_VERSION'),
                                cache_version_concretize=os.getenv('CONCRETIZE_OCI_VERSION'),
-                               update_cache=False)
+                               override_cache=False)
     spack_operation = SpackOperationCreator.get_spack_operator(spack_config, use_cache=False)
     spack_operation.install_spack('0.23.1', bashrc_path=bashrc_path)
     spack_operation.setup_spack_env()
