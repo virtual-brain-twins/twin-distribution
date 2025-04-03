@@ -20,10 +20,15 @@ except OSError:
 
 vbt_spack_env_access_token = os.getenv('VBT_SPACK_ENV_ACCESS_TOKEN')
 vbt_spack_env_name = os.getenv('VBT_SPACK_ENV_NAME')
+
+print('=============================================')
+print(vbt_spack_env_access_token)
+print(vbt_spack_env_name)
 if home_path:
     install_dir = Path(f'{home_path}/').resolve()
 else:
     install_dir = Path('../').resolve()
+print(install_dir)
 data_dir = install_dir / 'caching'
 concretization_dir = data_dir / 'concretize_cache'
 buildcache_dir = data_dir / 'binary_cache'
@@ -47,5 +52,5 @@ def set_env_vars():
         set_bashrc_variable('CONCRETIZE_OCI_PROJECT', os.getenv('CONCRETIZE_OCI_PROJECT'), bashrc_path=bashrc_path)
         set_bashrc_variable('CONCRETIZE_OCI_USERNAME', os.getenv('CONCRETIZE_OCI_USERNAME'), bashrc_path=bashrc_path)
         set_bashrc_variable('CONCRETIZE_OCI_VERSION', os.getenv('CONCRETIZE_OCI_VERSION'), bashrc_path=bashrc_path)
-        set_bashrc_variable('VBT_SPACK_ENV_ACCESS_TOKEN', os.getenv('VBT_SPACK_ENV_ACCESS_TOKEN'),
-                            bashrc_path=bashrc_path)
+        set_bashrc_variable('VBT_SPACK_ENV_ACCESS_TOKEN', os.getenv('VBT_SPACK_ENV_ACCESS_TOKEN'), bashrc_path=bashrc_path)
+        set_bashrc_variable('VBT_SPACK_ENV_NAME', os.getenv('VBT_SPACK_ENV_NAME'), bashrc_path=bashrc_path)

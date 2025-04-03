@@ -95,8 +95,8 @@ create-box:
     expire_in: 1 week
 
 
-release:
-  needs:
-    - job: create-box
-      artifacts: true
+#release:
+#  needs:
+#    - job: create-box
+#      artifacts: true
 
