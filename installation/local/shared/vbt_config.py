@@ -4,6 +4,10 @@ from pathlib import Path
 from dedal.model.SpackDescriptor import SpackDescriptor
 from dedal.utils.utils import set_bashrc_variable
 
+user = None
+home_path = None
+bashrc_path = None
+
 try:
     user = os.getlogin()
     if user:
@@ -16,8 +20,13 @@ except OSError:
 
 vbt_spack_env_access_token = os.getenv('VBT_SPACK_ENV_ACCESS_TOKEN')
 vbt_spack_env_name = os.getenv('VBT_SPACK_ENV_NAME')
-install_dir = Path('./').resolve()
-data_dir = install_dir / 'caching'
+
+if home_path:
+    install_dir = Path(f'{home_path}/').resolve()
+else:
+    install_dir = Path('../').resolve()
+data_dir = install_dir / 'data'
+os.makedirs(data_dir, exist_ok=True)
 concretization_dir = data_dir / 'concretize_cache'
 buildcache_dir = data_dir / 'binary_cache'
 
@@ -29,6 +38,7 @@ vbt_env = SpackDescriptor(vbt_spack_env_name, data_dir, spack_env_git)
 
 
 def set_env_vars():
+    print(bashrc_path)
     if bashrc_path:
         set_bashrc_variable('BUILDCACHE_OCI_HOST', os.getenv('BUILDCACHE_OCI_HOST'), bashrc_path=bashrc_path)
         set_bashrc_variable('BUILDCACHE_OCI_PASSWORD', os.getenv('BUILDCACHE_OCI_PASSWORD'), bashrc_path=bashrc_path)
@@ -40,5 +50,5 @@ def set_env_vars():
         set_bashrc_variable('CONCRETIZE_OCI_PROJECT', os.getenv('CONCRETIZE_OCI_PROJECT'), bashrc_path=bashrc_path)
         set_bashrc_variable('CONCRETIZE_OCI_USERNAME', os.getenv('CONCRETIZE_OCI_USERNAME'), bashrc_path=bashrc_path)
         set_bashrc_variable('CONCRETIZE_OCI_VERSION', os.getenv('CONCRETIZE_OCI_VERSION'), bashrc_path=bashrc_path)
-        set_bashrc_variable('VBT_SPACK_ENV_ACCESS_TOKEN', os.getenv('VBT_SPACK_ENV_ACCESS_TOKEN'),
-                            bashrc_path=bashrc_path)
+        set_bashrc_variable('VBT_SPACK_ENV_ACCESS_TOKEN', os.getenv('VBT_SPACK_ENV_ACCESS_TOKEN'), bashrc_path=bashrc_path)
+        set_bashrc_variable('VBT_SPACK_ENV_NAME', os.getenv('VBT_SPACK_ENV_NAME'), bashrc_path=bashrc_path)
