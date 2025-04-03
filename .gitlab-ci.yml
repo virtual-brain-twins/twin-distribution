@@ -9,7 +9,7 @@ variables:
 
 test-create-cache:
   rules:
-    - if: '$CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "dev"'
+    - if: '$CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "master"'
       when: always
     - when: never
   image: python:3.11
@@ -23,12 +23,17 @@ test-create-cache:
   script:
     - chmod +x ./installation/local/shared/vbt.sh
     - ./installation/local/shared/vbt.sh "create_cache.py" "./installation/local/"
+  artifacts:
+    paths:
+      - ./installation/local/shared/.dedal.log
+      - ./installation/local/shared/.generate_cache.log
+    expire_in: 1 week
 
 test-use-cache:
   environment:
     name: testing
   rules:
-    - if: '$CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "dev"'
+    - if: '$CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "master"'
       when: always
     - when: never
   image: python:3.11
@@ -42,14 +47,17 @@ test-use-cache:
   script:
     - chmod +x ./installation/local/shared/vbt.sh
     - ./installation/local/shared/vbt.sh "use_cache.py" "./installation/local/"
+  artifacts:
+    paths:
+      - ./installation/local/shared/.dedal.log
+      - ./installation/local/shared/.generate_cache.log
+    expire_in: 1 week
 
 build-cache:
   environment:
     name: caching
   rules:
-    - if: '$CI_COMMIT_BRANCH == "dev"'
-      when: always
-    - when: never
+    - if: '$CI_PIPELINE_SOURCE == "schedule" && $OPERATION == "cache"'
   image: python:3.11
   stage: build
   timeout: 24 hours
@@ -66,15 +74,11 @@ create-box:
   environment:
     name: caching
   rules:
-    - if: '$CI_COMMIT_BRANCH == "master"'
-      when: always
-    - when: never
+    - if: '$CI_COMMIT_TAG && $CI_COMMIT_BRANCH == "master"'
   image: ubuntu:24.04
   stage: release
-  id_tokens:
-    SITE_ID_TOKEN:
-      aud: "https://gitlab.jsc.fz-juelich.de"
-  timeout: 2 hours
+  when: manual
+  timeout: 3 hours
   tags:
     - $SHELL_RUNNER_TAG
   before_script:
@@ -87,14 +91,13 @@ create-box:
 
     # install Vagrant on the Ci runner
   script:
+    - echo "running release_job"
     #    - vagrant --version
     - vboxmanage --version
 
   artifacts:
     paths:
       - $BOX_NAME
-    expire_in: 1 week
-#
-#  after_script:
-#    - vagrant destroy -f
-
+  release:
+    tag_name: '$CI_COMMIT_TAG'
+    description: '$CI_COMMIT_TAG'

@@ -23,14 +23,9 @@ def append_command_to_file(command: str, file_path: str):
 
 
 def check_installed_all_spack_packages(env_path: Path, spack_operation: SpackOperation):
-    print('================')
     to_install = extract_spack_packages(env_path / 'spack.yaml')
-    print(f'To install packages {to_install}')
     installed = spack_operation.find_packages()
-    print(f'Installed packages {installed}')
-    print('================')
     for package in to_install:
         if package not in list(installed.keys()):
-            print(f'Package {package} is not installed')
             return False
     return True
