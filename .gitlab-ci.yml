@@ -69,13 +69,7 @@ create-box:
     - when: never
   image: ubuntu:24.04
   stage: release
-  when: manual
-#  except:
-#    - tags
-  id_tokens:
-    SITE_ID_TOKEN:
-      aud: "https://gitlab.jsc.fz-juelich.de"
-  timeout: 2 hours
+  timeout: 3 hours
   tags:
     - $SHELL_RUNNER_TAG
   before_script:
@@ -83,13 +77,14 @@ create-box:
     - chmod +x ./installation/local/shared/commons/release_tools.sh
     - ./installation/local/shared/commons/release_tools.sh
 
-    - echo "VirtualBox version:"
-    - vboxmanage --version
+
 
     # install Vagrant on the Ci runner
   script:
-    #    - vagrant --version
+    - echo "VirtualBox version:"
     - vboxmanage --version
+    - echo "Vagrant version:"
+    - vagrant --version
 
   artifacts:
     paths:
