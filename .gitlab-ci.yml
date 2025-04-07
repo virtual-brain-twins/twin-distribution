@@ -47,7 +47,7 @@ build-cache:
   environment:
     name: caching
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "schedule" && $CI_COMMIT_BRANCH == "master"'
+    - if: '$CI_PIPELINE_SOURCE == "schedule" && $OPERATION == "cache" && $CI_COMMIT_BRANCH == "master"'
   image: python:3.11
   stage: build
   timeout: 24 hours
