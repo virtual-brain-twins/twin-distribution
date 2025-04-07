@@ -23,6 +23,8 @@ sudo /sbin/vboxconfig
 # Output version to verify install
 echo "VirtualBox version:"
 vboxmanage --version
+echo "Vagrant version:"
+vagrant --version
 
 # Install Vagrant
 echo "Installing Vagrant..."
@@ -30,8 +32,7 @@ wget -O - https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/sh
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
 sudo apt update && sudo apt install vagrant
 
-echo "Vagrant version:"
-vagrant --version
-vboxmanage --version
+cd ../VM_release
+vagrant up
 
 
