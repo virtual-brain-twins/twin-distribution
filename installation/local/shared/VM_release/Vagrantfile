@@ -6,8 +6,8 @@ VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # Every Vagrant virtual environment requires a box to build.
-    config.vm.box = "bento/ubuntu-24.04"
-    config.vm.box_version = "202502.21.0"
+    config.vm.box = "vbt/debian12"
+    config.vm.box_version = "0.1.2"
 
     config.vm.define "VM_vbt_release"
 
@@ -15,7 +15,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # forwarded_port in order to be able to access jupyter lab from the VM
     config.vm.network "forwarded_port", guest: 8888, host: 8888
 
-    config.vm.synced_folder File.join(Dir.pwd, "../shared"), "/home/vagrant/shared"
+    config.vm.synced_folder File.join(Dir.pwd, "../"), "/home/vagrant/shared"
 
     config.vm.provider "virtualbox" do |vb|
         # name of the VirtualBox GUI

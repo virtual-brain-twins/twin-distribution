@@ -88,20 +88,18 @@ create-box:
   tags:
     - $SHELL_RUNNER_TAG
   before_script:
-    # install virtual box on the Ci runner
+    # install virtual box and Vagrant on the Ci runner
     - chmod +x ./installation/local/shared/commons/release_tools.sh
     - ./installation/local/shared/commons/release_tools.sh
-
-
-
-    # install Vagrant on the Ci runner
   script:
     - echo "running release_job"
     - echo "VirtualBox version:"
     - vboxmanage --version
     - echo "Vagrant version:"
     - vagrant --version
-
+    - cd ./installation/local/shared/VM_release && vagrant up
+    - cd /
+    - vagrant package --base VM_vbt_release --output $BOX_NAME
   artifacts:
     paths:
       - $BOX_NAME
