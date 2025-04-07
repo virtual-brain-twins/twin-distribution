@@ -26,8 +26,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     # Define the bootstrap file: A (shell) script that runs after first setup of your box (= provisioning)
     config.vm.provision "shell" do |shell|
-        shell.path = "../shared/vbt.sh"
-        shell.args = "create_cache.py /home/vagrant/"
+        shell.path = "../shared/commons/release_tools.sh"
         shell.env = {
             BUILDCACHE_OCI_USERNAME:Shellwords.escape(ENV['BUILDCACHE_OCI_USERNAME']),
             BUILDCACHE_OCI_PASSWORD:Shellwords.escape(ENV['BUILDCACHE_OCI_PASSWORD']),
