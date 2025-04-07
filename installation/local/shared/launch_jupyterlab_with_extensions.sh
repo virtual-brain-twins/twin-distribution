@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 # run with source: source ./launch_jupyterlab_with_extensions.sh
 # List of extensions installed with spack
 
