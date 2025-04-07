@@ -23,11 +23,11 @@ test-create-cache:
   script:
     - chmod +x ./installation/local/shared/vbt.sh
     - ./installation/local/shared/vbt.sh "create_cache.py" "./installation/local/"
-  artifacts:
-    paths:
-      - ./installation/local/shared/.dedal.log
-      - ./installation/local/shared/.generate_cache.log
-    expire_in: 1 week
+#  artifacts:
+#    paths:
+#      - ./installation/local/shared/.dedal.log
+#      - ./installation/local/shared/.generate_cache.log
+#    expire_in: 1 week
 
 test-use-cache:
   environment:
