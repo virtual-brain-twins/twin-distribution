@@ -86,14 +86,15 @@ create-box:
     - chmod +x ./installation/local/shared/commons/release_tools.sh
     - ./installation/local/shared/commons/release_tools.sh
 
-    - echo "VirtualBox version:"
-    - vboxmanage --version
+
 
     # install Vagrant on the Ci runner
   script:
     - echo "running release_job"
-    #    - vagrant --version
+    - echo "VirtualBox version:"
     - vboxmanage --version
+    - echo "Vagrant version:"
+    - vagrant --version
 
   artifacts:
     paths:
