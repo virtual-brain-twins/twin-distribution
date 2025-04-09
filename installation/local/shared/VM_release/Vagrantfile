@@ -15,7 +15,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # forwarded_port in order to be able to access jupyter lab from the VM
     config.vm.network "forwarded_port", guest: 8888, host: 8888
 
-    config.vm.synced_folder File.join(Dir.pwd, "../shared"), "/home/vagrant/shared"
+    config.vm.synced_folder File.join(Dir.pwd, "../"), "/home/vagrant/shared"
 
     config.vm.provider "virtualbox" do |vb|
         # name of the VirtualBox GUI
