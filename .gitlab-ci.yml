@@ -5,7 +5,6 @@ stages:
 
 variables:
   DEBIAN_FRONTEND: noninteractive
-  BOX_NAME: "vbt_debian12.box"
 
 test-create-cache:
   rules:
@@ -64,7 +63,7 @@ build-cache:
     - if: '$CI_PIPELINE_SOURCE == "schedule" && $OPERATION == "cache"'
   image: python:3.11
   stage: build
-  timeout: 24 hours
+  timeout: 48 hours
   tags:
     - $DOCKER_RUNNER_TAG
   before_script:
@@ -73,12 +72,19 @@ build-cache:
   script:
     - chmod +x ./installation/local/shared/vbt.sh
     - ./installation/local/shared/vbt.sh "create_cache.py" "./installation/local/"
+    - mv ./installation/local/shared/.dedal.log .use_cache.dedal.log
+    - mv ./installation/local/shared/.generate_cache.log .use_cache.generate_cache.log
+  artifacts:
+    paths:
+      - .use_cache.dedal.log
+      - .use_cache.generate_cache.log
+    expire_in: never
 
 create-box:
   environment:
     name: caching
   rules:
-    - if: '$CI_COMMIT_TAG && $CI_COMMIT_BRANCH == "master"'
+    - if: $CI_COMMIT_TAG
   image: ubuntu:24.04
   stage: release
   when: manual
@@ -86,21 +92,36 @@ create-box:
   tags:
     - $SHELL_RUNNER_TAG
   before_script:
-    # install virtual box and Vagrant on the Ci runner
-    - chmod +x ./installation/local/shared/commons/release_tools.sh
-    - ./installation/local/shared/commons/release_tools.sh
+    # install VirtualBox and Vagrant on the Ci runner
+    - chmod +x ./installation/local/release/release_vagrant_box.sh
+    - ./installation/local/release/release_vagrant_box.sh
   script:
-    - echo "running release_job"
+      # Output version to verify install
     - echo "VirtualBox version:"
     - vboxmanage --version
     - echo "Vagrant version:"
     - vagrant --version
-    - cd ./installation/local/shared/VM_release && vagrant up
+    - cd ../VM_user
+    - vagrant up
     - cd /
-    - vagrant package --base VM_vbt_release --output $BOX_NAME
+    - vagrant package --base VM_vbt_user --output $BOX_NAME
   artifacts:
     paths:
       - $BOX_NAME
+
+release-gitlab:
+  stage: release
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  needs: ["create-box"]
+  tags:
+    - $DOCKER_RUNNER_TAG
+  rules:
+    - if: $CI_COMMIT_TAG
+  script:
+    - echo "running release_job"
   release:
     tag_name: '$CI_COMMIT_TAG'
     description: '$CI_COMMIT_TAG'
+  artifacts:
+    paths:
+      - $BOX_NAME
