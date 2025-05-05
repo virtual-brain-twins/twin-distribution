@@ -61,18 +61,24 @@ build-cache:
     name: caching
   rules:
     - if: '$CI_PIPELINE_SOURCE == "schedule" && $OPERATION == "cache"'
-  image: python:3.11
+  image: ubuntu:24.04
   stage: build
   timeout: 48 hours
   tags:
-    - $DOCKER_RUNNER_TAG
+    - $SHELL_RUNNER_TAG
   before_script:
     - chmod +x ./installation/local/shared/commons/bootstrap.sh
     - ./installation/local/shared/commons/bootstrap.sh
+    - chmod +x ./installation/local/shared/commons/vagrant_box_tools.sh
+    - ./installation/local/shared/commons/vagrant_box_tools.sh
   script:
-    - chmod +x ./installation/local/shared/vbt.sh
-    - ./installation/local/shared/vbt.sh "create_cache.py" "./installation/local/"
-    - mv ./installation/local/shared/.dedal.log .use_cache.dedal.log
+    - echo "VirtualBox version:"
+    - vboxmanage --version
+    - echo "Vagrant version:"
+    - vagrant --version
+    - cd ../VM_cache
+    - vagrant up
+    - mv ./installation/local/shared/. .log .use_cache.dedal.log
     - mv ./installation/local/shared/.generate_cache.log .use_cache.generate_cache.log
   artifacts:
     paths:
@@ -93,8 +99,8 @@ create-box:
     - $SHELL_RUNNER_TAG
   before_script:
     # install VirtualBox and Vagrant on the Ci runner
-    - chmod +x ./installation/local/release/release_vagrant_box.sh
-    - ./installation/local/release/release_vagrant_box.sh
+    - chmod +x ./installation/local/shared/commons/vagrant_box_tools.sh
+    - ./installation/local/shared/commons/vagrant_box_tools.sh
   script:
       # Output version to verify install
     - echo "VirtualBox version:"
@@ -108,6 +114,7 @@ create-box:
   artifacts:
     paths:
       - $BOX_NAME
+    expire_in: never
 
 release-gitlab:
   stage: release
@@ -125,3 +132,4 @@ release-gitlab:
   artifacts:
     paths:
       - $BOX_NAME
+    expire_in: never
