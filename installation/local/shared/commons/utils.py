@@ -1,9 +1,9 @@
 import os
 from pathlib import Path
 
+from dedal.error_handling.exceptions import BashCommandException
 from dedal.spack_factory.SpackOperation import SpackOperation
 from dedal.utils.spack_utils import extract_spack_packages
-from error_handling.exceptions import BashrcException
 
 
 def append_command_to_file(command: str, file_path: str):
@@ -19,7 +19,7 @@ def append_command_to_file(command: str, file_path: str):
         with open(file_path, 'a') as file:
             file.write(f"{command}\n")
     except Exception as e:
-        raise BashrcException(f"Error appending command: {e}")
+        raise BashCommandException(f"Error appending command: {e}")
 
 
 def check_installed_all_spack_packages(env_path: Path, spack_operation: SpackOperation):
