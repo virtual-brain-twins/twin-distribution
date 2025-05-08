@@ -68,7 +68,7 @@ build-cache:
   stage: build
   timeout: 48 hours
   tags:
-    - jusuf
+    - juwels
     - jacamar
     - login
     - shell
