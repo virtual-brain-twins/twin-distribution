@@ -57,6 +57,9 @@ test-use-cache:
     expire_in: 1 week
 
 build-cache:
+  id_tokens:
+    SITE_ID_TOKEN:
+      aud: "https://gitlab.jsc.fz-juelich.de"
   environment:
     name: caching
   rules:
@@ -65,7 +68,10 @@ build-cache:
   stage: build
   timeout: 48 hours
   tags:
-    - $SHELL_RUNNER_TAG
+    - jusuf
+    - jacamar
+    - login
+    - shell
   before_script:
     - chmod +x ./installation/local/shared/commons/bootstrap.sh
     - ./installation/local/shared/commons/bootstrap.sh
