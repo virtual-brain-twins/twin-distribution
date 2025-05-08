@@ -38,7 +38,7 @@ JSC_HPC_BUILD:
     - module load Python 
     - pip install --upgrade pip   
     - pip install -e .[test]  # from dedal cicd script
-    - export PATH="/p/home/jusers/$usr/.local/bin:$PATH" 
+    - export PATH="/p/home/jusers/$usr/juwels/.local/bin:$PATH" 
     - pytest --disable-warnings  
 
 
