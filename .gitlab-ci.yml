@@ -73,6 +73,7 @@ build-cache:
     - login
     - shell
   before_script:
+    - apt-get update
     - chmod +x ./installation/local/shared/commons/bootstrap.sh
     - ./installation/local/shared/commons/bootstrap.sh
     - chmod +x ./installation/local/shared/commons/vagrant_box_tools.sh
