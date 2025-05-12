@@ -3,6 +3,7 @@ stages:
   - build
   - release
   - hpcbuild 
+  - hpctest
 
 variables:
   DEBIAN_FRONTEND: noninteractive
@@ -40,9 +41,37 @@ JSC_HPC_BUILD:
     - module load Python 
     - pip install --upgrade pip   
     - pip install -e .[test]  # from dedal cicd script
+    # - export PATH="/p/home/jusers/$usr/juwels/.local/bin:$PATH" 
+    # - pytest --disable-warnings  
+
+JSC_HPC_test:
+  environment:
+    name: testing
+  id_tokens:
+    SITE_ID_TOKEN:
+      aud: "https://gitlab.jsc.fz-juelich.de"
+
+  stage: hpctest
+  tags:
+    - juwels
+    - jacamar
+    - compute
+    - slurm
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "dedalCiHPC"'
+      when: on_success
+    - when: never
+  script:
+    - usr=$(whoami) 
+
+    - mkdir -p $BASEPATH/$usr  
+    - cd $BASEPATH/$usr/
+
+    - cd dedal  
+
+    - module load Python 
     - export PATH="/p/home/jusers/$usr/juwels/.local/bin:$PATH" 
     - pytest --disable-warnings  
-
 
 test-create-cache:
   environment:
