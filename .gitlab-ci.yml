@@ -21,6 +21,7 @@ test-create-cache:
     - $DOCKER_RUNNER_TAG
   before_script:
     - chmod +x ./installation/local/shared/commons/bootstrap.sh
+    - echo 'testing'
     - ./installation/local/shared/commons/bootstrap.sh
   script:
     - chmod +x ./installation/local/shared/vbt.sh
