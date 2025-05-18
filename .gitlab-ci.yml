@@ -38,12 +38,14 @@ JSC_HPC_BUILD:
     - git clone https://gitlab.ebrains.eu/ri/tech-hub/platform/esd/dedal.git  
     - cd dedal  
     - module load Python
-    - python venv venv 
+    - python -m venv venv 
     - source venv/bin/activate 
     - pip install --upgrade pip   
     - pip install -e .[test]  # from dedal cicd script
     # - export PATH="/p/home/jusers/$usr/$SYSTEMNAME/.local/bin:$PATH" 
     - pytest --disable-warnings  
+    - deactivate
+    - rm -rf venv
 
 # JSC_HPC_test:
 #   environment:
