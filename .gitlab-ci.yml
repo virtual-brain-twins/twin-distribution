@@ -45,7 +45,8 @@ JSC_HPC_BUILD:
     # - export PATH="/p/home/jusers/$usr/$SYSTEMNAME/.local/bin:$PATH" 
     - pytest --disable-warnings  
     - deactivate
-    - rm -rf venv
+    - cd ..
+    - if [ -d "dedal" ]; then rm -rf dedal; fi 
 
 # JSC_HPC_test:
 #   environment:
