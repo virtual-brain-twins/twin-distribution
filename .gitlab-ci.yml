@@ -44,10 +44,13 @@ JSC_HPC_BUILD:
     - pip install -e .[test]  # from dedal cicd script
     - pip install pytest-html # TBD need to see requirements.txt 
     # - export PATH="/p/home/jusers/$usr/$SYSTEMNAME/.local/bin:$PATH" 
-    - pytest --disable-warnings  --html=report.html --self-contained-html 
+    - pytest --disable-warnings  --html=/tmp/report.html --self-contained-html 
     - deactivate
     - cd ..
-    - if [ -d "dedal" ]; then rm -rf dedal; fi 
+    - if [ -d "dedal" ]; then rm -rf dedal; fi
+  artifact:
+    paths:
+      - /tmp/report.html 
 
 # JSC_HPC_test:
 #   environment:
