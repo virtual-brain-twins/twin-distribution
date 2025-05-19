@@ -45,16 +45,6 @@ JSC_HPC_BUILD:
     - pip install pytest-html # TBD need to see requirements.txt 
     # - export PATH="/p/home/jusers/$usr/$SYSTEMNAME/.local/bin:$PATH" 
     - pytest --disable-warnings  --html=report.html --self-contained-html 
-    - git clone https://oauth2:"$PAT"@gitlab.jsc.fz-juelich.de/singh17/autoreport.git
-    - cd autoreport
-    - mkdir -p public
-    - mv ../report.html public/index.html
-    - git config user.email "k.singh@fz-juelich.de"
-    - git config user.name "singh17"
-    - git add .
-    - git commit -m "Deploy from CI $(date)" || echo "No changes"
-    - git push origin main
-
     - deactivate
     - cd ..
     - if [ -d "dedal" ]; then rm -rf dedal; fi 
