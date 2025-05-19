@@ -48,7 +48,7 @@ JSC_HPC_BUILD:
     - deactivate
     - cd ..
     - if [ -d "dedal" ]; then rm -rf dedal; fi
-  artifact:
+  artifacts:
     paths:
       - /tmp/report.html 
 
