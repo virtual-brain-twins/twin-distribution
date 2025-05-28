@@ -1,0 +1,54 @@
+common_vagrantfile = File.join(Dir.pwd, '../shared/commons/Vagrantfile.common')
+load common_vagrantfile if File.exist?(common_vagrantfile)
+
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+    # Every Vagrant virtual environment requires a box to build.
+    config.vm.box = "bento/ubuntu-24.04"
+    config.vm.box_version = "202502.21.0"
+
+    config.vm.define "VM_vbt_release"
+
+    config.vm.network "public_network", use_dhcp_assigned_default_route: true
+    # forwarded_port in order to be able to access jupyter lab from the VM
+    config.vm.network "forwarded_port", guest: 8888, host: 8888
+
+    config.vm.synced_folder File.join(Dir.pwd, "../shared"), "/home/vagrant/shared"
+
+    config.vm.provider "virtualbox" do |vb|
+        # name of the VirtualBox GUI
+        vb.name = "VM_vbt_release"
+
+        # Customize the amount of memory on the VM:
+        vb.memory = "4096"
+
+        #number of cpus
+        vb.cpus = "4"
+
+  config.vm.boot_timeout = 86400  # 24h
+  end
+
+  # Define the bootstrap file: A (shell) script that runs after first setup of your box (= provisioning)
+  config.vm.provision "shell" do |shell|
+    shell.path = "../shared/release/release_vagrant_box_tools.sh"
+    shell.env = {
+        BUILDCACHE_OCI_USERNAME:Shellwords.escape(ENV['BUILDCACHE_OCI_USERNAME']),
+        BUILDCACHE_OCI_PASSWORD:Shellwords.escape(ENV['BUILDCACHE_OCI_PASSWORD']),
+        BUILDCACHE_OCI_HOST:Shellwords.escape(ENV['BUILDCACHE_OCI_HOST']),
+        BUILDCACHE_OCI_PROJECT:Shellwords.escape(ENV['BUILDCACHE_OCI_PROJECT']),
+        BUILDCACHE_OCI_VERSION:Shellwords.escape(ENV['BUILDCACHE_OCI_VERSION']),
+
+        CONCRETIZE_OCI_USERNAME:Shellwords.escape(ENV['CONCRETIZE_OCI_USERNAME']),
+        CONCRETIZE_OCI_PASSWORD:Shellwords.escape(ENV['CONCRETIZE_OCI_PASSWORD']),
+        CONCRETIZE_OCI_HOST:Shellwords.escape(ENV['CONCRETIZE_OCI_HOST']),
+        CONCRETIZE_OCI_PROJECT:Shellwords.escape(ENV['CONCRETIZE_OCI_PROJECT']),
+        CONCRETIZE_OCI_VERSION:Shellwords.escape(ENV['CONCRETIZE_OCI_VERSION']),
+
+        VBT_SPACK_ENV_ACCESS_TOKEN:Shellwords.escape(ENV['VBT_SPACK_ENV_ACCESS_TOKEN']),
+        VBT_SPACK_ENV_NAME:Shellwords.escape(ENV['VBT_SPACK_ENV_NAME']),
+    }
+  end
+
+end

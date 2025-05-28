@@ -56,7 +56,7 @@ test-use-cache:
       - .use_cache.generate_cache.log
     expire_in: 1 week
 
-build-cache:
+build-cache-VM:
   id_tokens:
     SITE_ID_TOKEN:
       aud: "https://gitlab.jsc.fz-juelich.de"
@@ -76,8 +76,8 @@ build-cache:
     - apt-get update
     - chmod +x ./installation/local/shared/commons/bootstrap.sh
     - ./installation/local/shared/commons/bootstrap.sh
-    - chmod +x ./installation/local/shared/commons/vagrant_box_tools.sh
-    - ./installation/local/shared/commons/vagrant_box_tools.sh
+    - chmod +x ./installation/local/shared/release/release_vagrant_box_tools.sh
+    - ./installation/local/shared/release/release_vagrant_box_tools.sh
   script:
     - echo "VirtualBox version:"
     - vboxmanage --version
@@ -85,12 +85,36 @@ build-cache:
     - vagrant --version
     - cd ../VM_cache
     - vagrant up
-    - mv ./installation/local/shared/.dedal.log .build_cache.dedal.log
-    - mv ./installation/local/shared/.generate_cache.log .build_cache.generate_cache.log
+    - mv ./installation/local/shared/.dedal.log .build_cache_VM.dedal.log
+    - mv ./installation/local/shared/.generate_cache.log .build_cache_VM.generate_cache.log
   artifacts:
     paths:
-      - .build_cache.dedal.log
-      - .build_cache.generate_cache.log
+      - .build_cache_VM.dedal.log
+      - .build_cache_VM.generate_cache.log
+    expire_in: never
+
+build-cache-docker:
+  environment:
+    name: caching-docker
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule" && $OPERATION == "cache"'
+  image: python:3.11
+  stage: build
+  timeout: 48 hours
+  tags:
+    - $DOCKER_RUNNER_TAG
+  before_script:
+    - chmod +x ./installation/local/shared/commons/bootstrap.sh
+    - ./installation/local/shared/commons/bootstrap.sh
+  script:
+    - chmod +x ./installation/local/shared/vbt.sh
+    - ./installation/local/shared/vbt.sh "create_cache.py" "./installation/local/"
+    - mv ./installation/local/shared/.dedal.log .build_cache_docker.dedal.log
+    - mv ./installation/local/shared/.generate_cache.log .build_cache_docker.generate_cache.log
+  artifacts:
+    paths:
+      - .build_cache_docker.dedal.log
+      - .build_cache_docker.generate_cache.log
     expire_in: never
 
 create-box:
