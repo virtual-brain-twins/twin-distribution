@@ -34,16 +34,16 @@
        # The following variables configure the Harbor docker OCI registry (EBRAINS) used for caching.
        
        # The hostname of the OCI registry. e.g. docker-registry.ebrains.eu
-       CONCRETIZE__OCI_HOST="docker-registry.ebrains.eu"
+       CONCRETIZE_OCI_HOST="docker-registry.ebrains.eu"
        
        # The project name in the Docker registry.
-       CONCRETIZE__OCI_PROJECT="concretize_caches"
+       CONCRETIZE_OCI_PROJECT="concretize_cache"
        
        # The username used for authentication with the Docker registry.
-       CONCRETIZE__OCI_USERNAME="robot$concretize-cache-test+user"
+       CONCRETIZE_OCI_USERNAME="robot$concretize-cache-test+user"
        
        # The password used for authentication with the Docker registry.
-       CONCRETIZE__OCI_HOST="###ACCESS_TOKEN###"
+       CONCRETIZE_OCI_HOST="###ACCESS_TOKEN###"
         
 
        # OCI Registry Configuration Sample for binary caches
@@ -65,6 +65,7 @@
        # The password used for cloning the vbt-spack-env repo
        # =============================
        VBT_SPACK_ENV_ACCESS_TOKEN="###ACCESS_TOKEN###"
+       VBT_SPACK_ENV_NAME="vbt-spack-env"
 
 For both concretization and binary caches, the cache version can be changed via the attributes ```cache_version_concretize``` and ```cache_version_build```. 
 The default values are ```v1```.
