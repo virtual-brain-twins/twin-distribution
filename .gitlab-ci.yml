@@ -104,6 +104,8 @@ build-cache-docker:
   tags:
     - $DOCKER_RUNNER_TAG
   before_script:
+    - sed -i 's|http://archive.ubuntu.com|https://archive.ubuntu.com|g' /etc/apt/sources.list
+    - sed -i 's|http://security.ubuntu.com|https://security.ubuntu.com|g' /etc/apt/sources.list
     - chmod +x ./installation/local/shared/commons/bootstrap.sh
     - ./installation/local/shared/commons/bootstrap.sh
     - gcc --version
