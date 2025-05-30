@@ -108,6 +108,7 @@ build-cache-docker:
   before_script:
     - chmod +x ./installation/local/shared/commons/bootstrap.sh
     - ./installation/local/shared/commons/bootstrap.sh
+    - gcc --version
   script:
     - chmod +x ./installation/local/shared/vbt.sh
     - ./installation/local/shared/vbt.sh "create_cache.py" "./installation/local/"
