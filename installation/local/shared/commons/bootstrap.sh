@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 set -e
+
+sed -i 's|http://archive.ubuntu.com|https://archive.ubuntu.com|g' /etc/apt/sources.list
+sed -i 's|http://security.ubuntu.com|https://security.ubuntu.com|g' /etc/apt/sources.list
 apt-get update
 apt install -o DPkg::Options::=--force-confold -y -q --reinstall \
                   bzip2 ca-certificates g++ gcc make gfortran git gzip lsb-release \
