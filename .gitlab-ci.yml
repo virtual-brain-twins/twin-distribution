@@ -114,6 +114,7 @@ build-cache-docker:
     - ls --all ./installation/local/shared/
     - mv ./installation/local/shared/.dedal.log .build_cache_docker.dedal.log
     - mv ./installation/local/shared/.generate_cache.log .build_cache_docker.generate_cache.log
+    - ls --all .
 #    - |
 #       if [ "$RESULT" != "true" ]; then
 #        echo "Condition check failed. Exiting."
