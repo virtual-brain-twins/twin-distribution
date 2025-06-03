@@ -12,7 +12,7 @@ test-create-cache:
       when: always
     - when: never
   image: python:3.11
-  stage: test
+  stage: release
   timeout: 1 hours
   tags:
     - $DOCKER_RUNNER_TAG
@@ -32,7 +32,7 @@ test-create-cache:
 
 test-use-cache:
   environment:
-    name: testing
+    name: release
   rules:
     - if: '$CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "dev"'
       when: always
