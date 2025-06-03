@@ -96,8 +96,8 @@ build-cache-VM:
 build-cache-docker:
   environment:
     name: caching-docker
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "schedule" && $OPERATION == "cache"'
+#  rules:
+#    - if: '$CI_PIPELINE_SOURCE == "schedule" && $OPERATION == "cache"'
   image: ubuntu:24.04
   stage: test
   timeout: 48 hours
