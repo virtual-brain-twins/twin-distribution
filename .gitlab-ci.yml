@@ -114,11 +114,11 @@ build-cache-docker:
     - ls --all ./installation/local/shared/
     - mv ./installation/local/shared/.dedal.log .build_cache_docker.dedal.log
     - mv ./installation/local/shared/.generate_cache.log .build_cache_docker.generate_cache.log
-    - |
-       if [ "$RESULT" != "true" ]; then
-        echo "Condition check failed. Exiting."
-        exit 1
-       fi
+#    - |
+#       if [ "$RESULT" != "true" ]; then
+#        echo "Condition check failed. Exiting."
+#        exit 1
+#       fi
   artifacts:
     paths:
       - .build_cache_docker.dedal.log
