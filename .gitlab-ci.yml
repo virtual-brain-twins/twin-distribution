@@ -32,13 +32,13 @@ test-create-cache:
 
 test-use-cache:
   environment:
-    name: release
+    name: testing
   rules:
     - if: '$CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "dev"'
       when: always
     - when: never
   image: python:3.11
-  stage: test
+  stage: release
   timeout: 1 hours
   tags:
     - $DOCKER_RUNNER_TAG
