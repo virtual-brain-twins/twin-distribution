@@ -11,7 +11,7 @@ test-create-cache:
     - if: '$CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "dev"'
       when: always
     - when: never
-  image: python:3.11
+  image: ubuntu:24.04
   stage: test
   timeout: 1 hours
   tags:
@@ -21,9 +21,14 @@ test-create-cache:
     - ./installation/local/shared/commons/bootstrap.sh
   script:
     - chmod +x ./installation/local/shared/vbt.sh
-    - ./installation/local/shared/vbt.sh "create_cache.py" "./installation/local/"
+    - RESULT=$(./installation/local/shared/vbt.sh "create_cache.py" "./installation/local/")
     - mv ./installation/local/shared/.dedal.log .create_cache.dedal.log
     - mv ./installation/local/shared/.generate_cache.log .create_cache.generate_cache.log
+    - |
+       if [ "$RESULT" != "true" ]; then
+        echo "Condition check failed. Exiting."
+        exit 1
+       fi
   artifacts:
     paths:
       - .create_cache.dedal.log
@@ -37,7 +42,7 @@ test-use-cache:
     - if: '$CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "dev"'
       when: always
     - when: never
-  image: python:3.11
+  image: ubuntu:24.04
   stage: test
   timeout: 1 hours
   tags:
@@ -47,9 +52,14 @@ test-use-cache:
     - ./installation/local/shared/commons/bootstrap.sh
   script:
     - chmod +x ./installation/local/shared/vbt.sh
-    - ./installation/local/shared/vbt.sh "use_cache.py" "./installation/local/"
+    - RESULT=$(./installation/local/shared/vbt.sh "use_cache.py" "./installation/local/")
     - mv ./installation/local/shared/.dedal.log .use_cache.dedal.log
     - mv ./installation/local/shared/.generate_cache.log .use_cache.generate_cache.log
+    - |
+       if [ "$RESULT" != "true" ]; then
+        echo "Condition check failed. Exiting."
+        exit 1
+       fi
   artifacts:
     paths:
       - .use_cache.dedal.log
@@ -98,7 +108,7 @@ build-cache-docker:
     name: caching-docker
   rules:
     - if: '$CI_PIPELINE_SOURCE == "schedule" && $OPERATION == "cache"'
-  image: python:3.11
+  image: ubuntu:24.04
   stage: build
   timeout: 48 hours
   tags:
@@ -109,10 +119,17 @@ build-cache-docker:
     - gcc --version
   script:
     - chmod +x ./installation/local/shared/vbt.sh
-    - ./installation/local/shared/vbt.sh "create_cache.py" "./installation/local/"
+    - RESULT=$(./installation/local/shared/vbt.sh "create_cache.py" "./installation/local/")
+    - echo "$RESULT"
     - mv ./installation/local/shared/.dedal.log .build_cache_docker.dedal.log
     - mv ./installation/local/shared/.generate_cache.log .build_cache_docker.generate_cache.log
+    - |
+       if [ "$RESULT" != "true" ]; then
+        echo "Condition check failed. Exiting."
+        exit 1
+       fi
   artifacts:
+    when: always
     paths:
       - .build_cache_docker.dedal.log
       - .build_cache_docker.generate_cache.log
