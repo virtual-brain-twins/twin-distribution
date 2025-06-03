@@ -2,6 +2,11 @@
 set -e
 start_time=$(date +%s)
 cd $2 || exit
+
+apt install dos2unix
+dos2unix ./shared/commons/bootstrap.sh
+chmod +x ./shared/commons/bootstrap.sh
+bash ./shared/commons/bootstrap.sh
 # The custom Linux distribution designed for the VBT is fully configured with all modifications from bootstrap.sh applied.
 git clone -b VT-109-HPC https://gitlab.ebrains.eu/ri/tech-hub/platform/esd/dedal.git
 cd ./dedal || exit
