@@ -99,7 +99,7 @@ build-cache-docker:
   rules:
     - if: '$CI_PIPELINE_SOURCE == "schedule" && $OPERATION == "cache"'
   image: ubuntu:24.04
-  stage: build
+  stage: test
   timeout: 48 hours
   tags:
     - $DOCKER_RUNNER_TAG
