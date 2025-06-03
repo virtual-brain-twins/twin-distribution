@@ -109,16 +109,16 @@ build-cache-docker:
     - gcc --version
   script:
     - chmod +x ./installation/local/shared/vbt.sh
-    - RESULT=$(./installation/local/shared/vbt.sh "create_cache.py" "./installation/local/")
+    - ./installation/local/shared/vbt.sh "create_cache.py" "./installation/local/"
     - echo "$RESULT"
     - ls --all ./installation/local/shared/
     - mv ./installation/local/shared/.dedal.log .build_cache_docker.dedal.log
     - mv ./installation/local/shared/.generate_cache.log .build_cache_docker.generate_cache.log
-    - |
-       if [ "$RESULT" != "true" ]; then
-        echo "Condition check failed. Exiting."
-        exit 1
-       fi
+#    - |
+#       if [ "$RESULT" != "true" ]; then
+#        echo "Condition check failed. Exiting."
+#        exit 1
+#       fi
   artifacts:
     when: always
     paths:

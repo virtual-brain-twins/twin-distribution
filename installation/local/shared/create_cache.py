@@ -3,8 +3,6 @@ from pathlib import Path
 from dedal.configuration.GpgConfig import GpgConfig
 from dedal.configuration.SpackConfig import SpackConfig
 import os
-
-from dedal.logger.logger_builder import get_logger
 from dedal.spack_factory.SpackOperationCreator import SpackOperationCreator
 from commons.utils import check_installed_all_spack_packages
 from vbt_config import set_env_vars, data_dir, install_dir, bashrc_path, concretization_dir, buildcache_dir, vbt_env, \
@@ -31,6 +29,4 @@ if __name__ == "__main__":
     spack_operation.concretize_spack_env()
     spack_operation.install_packages(os.cpu_count())
     if not check_installed_all_spack_packages(Path('../').resolve() / data_dir / vbt_env.name, spack_operation):
-        print('false')
-    else:
-        print('true')
+        sys.exit(-1)
