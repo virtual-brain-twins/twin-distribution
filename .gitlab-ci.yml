@@ -110,6 +110,7 @@ build-cache-docker:
   script:
     - chmod +x ./installation/local/shared/vbt.sh
     - ./installation/local/shared/vbt.sh "create_cache.py" "./installation/local/"
+    - ls --all ./installation/local/shared/.dedal.log
     - mv ./installation/local/shared/.dedal.log .build_cache_docker.dedal.log
     - mv ./installation/local/shared/.generate_cache.log .build_cache_docker.generate_cache.log
   artifacts:
