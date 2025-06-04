@@ -25,7 +25,7 @@ test-create-cache:
     - bash -c 'set -o pipefail && ./installation/local/shared/vbt.sh "create_cache.py" "./installation/local/" | tee "$TMPFILE"'
     - mv ./installation/local/shared/.dedal.log .create_cache.dedal.log
     - mv ./installation/local/shared/.generate_cache.log .create_cache.generate_cache.log
-    - export RESULT=$(grep . "$TMPFILE" | awk 'NR>1{print prev} {prev=$0}')
+    - export RESULT=$(grep . "$TMPFILE" | tail -n 2 | head -n 1)
     - echo "Result is $RESULT"
     - |
       if [ "$RESULT" != "true" ]; then
@@ -58,7 +58,7 @@ test-use-cache:
     - bash -c 'set -o pipefail && ./installation/local/shared/vbt.sh "use_cache.py" "./installation/local/" | tee "$TMPFILE"'
     - mv ./installation/local/shared/.dedal.log .use_cache.dedal.log
     - mv ./installation/local/shared/.generate_cache.log .use_cache.generate_cache.log
-    - export RESULT=$(grep . "$TMPFILE" | awk 'NR>1{print prev} {prev=$0}')
+    - export RESULT=$(grep . "$TMPFILE" | tail -n 2 | head -n 1)
     - echo "Result is $RESULT"
     - |
       if [ "$RESULT" != "true" ]; then
@@ -128,7 +128,7 @@ build-cache-docker:
     - echo "$RESULT"
     - mv ./installation/local/shared/.dedal.log .build_cache_docker.dedal.log
     - mv ./installation/local/shared/.generate_cache.log .build_cache_docker.generate_cache.log
-    - export RESULT=$(grep . "$TMPFILE" | awk 'NR>1{print prev} {prev=$0}')
+    - export RESULT=$(grep . "$TMPFILE" | tail -n 2 | head -n 1)
     - |
       if [ "$RESULT" != "true" ]; then
        exit 1
