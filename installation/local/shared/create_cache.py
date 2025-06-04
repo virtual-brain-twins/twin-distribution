@@ -17,7 +17,7 @@ if __name__ == "__main__":
                                system_name='VBT',
                                concretization_dir=concretization_dir,
                                buildcache_dir=buildcache_dir,
-                               gpg=None,
+                               gpg=GpgConfig('vbt', 'science@codemart.ro'),
                                use_spack_global=False,
                                cache_version_build=os.getenv('BUILDCACHE_OCI_VERSION'),
                                cache_version_concretize=os.getenv('CONCRETIZE_OCI_VERSION'),
