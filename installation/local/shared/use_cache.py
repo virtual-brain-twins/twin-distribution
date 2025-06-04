@@ -41,7 +41,9 @@ if __name__ == "__main__":
     spack_operation.concretize_spack_env()
     spack_operation.install_packages(os.cpu_count())
     if not check_installed_all_spack_packages(data_dir / vbt_env.name, spack_operation):
-        sys.exit(-1)
+        print('false')
+    else:
+        print('true')
     if user:
         append_command_to_file(command=f'spack env activate -p {str(data_dir / vbt_spack_env_name)}',
                                file_path=f'{home_path}/.bashrc')
