@@ -27,7 +27,7 @@ if __name__ == "__main__":
     spack_operation.install_spack('0.23.1', bashrc_path=bashrc_path)
     spack_operation.setup_spack_env()
     spack_operation.concretize_spack_env()
-    spack_operation.install_packages(os.cpu_count(), fresh=True)
+    spack_operation.install_packages(os.cpu_count())
     if not check_installed_all_spack_packages(Path('../').resolve() / data_dir / vbt_env.name, spack_operation):
         print('false')
     else:
