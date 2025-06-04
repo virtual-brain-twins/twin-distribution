@@ -26,6 +26,7 @@ test-create-cache:
     - mv ./installation/local/shared/.dedal.log .create_cache.dedal.log
     - mv ./installation/local/shared/.generate_cache.log .create_cache.generate_cache.log
     - export RESULT=$(grep . "$TMPFILE" | awk 'NR>1{print prev} {prev=$0}')
+    - echo "Result is $RESULT"
     - |
       if [ "$RESULT" != "true" ]; then
        exit 1
@@ -58,6 +59,7 @@ test-use-cache:
     - mv ./installation/local/shared/.dedal.log .use_cache.dedal.log
     - mv ./installation/local/shared/.generate_cache.log .use_cache.generate_cache.log
     - export RESULT=$(grep . "$TMPFILE" | awk 'NR>1{print prev} {prev=$0}')
+    - echo "Result is $RESULT"
     - |
       if [ "$RESULT" != "true" ]; then
        exit 1
