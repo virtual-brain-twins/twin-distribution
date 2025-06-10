@@ -123,6 +123,12 @@ You can start the local installation by running the following command in /instal
 In order to connect to the newly created VM, you need to run the following command in /installation/local/VM_user:
    - `vagrant ssh`
 
+In order to create a vagrant box from the VirtualBox VM, the following command can be used:
+   - `vagrant package --base <vm-name> --output VM_VBT.box`
+
+In order to use directly VM_VBT.box, you should add this vagrant box with the following command:
+   - `vagrant box add VM_VBT.box --name vbt/VM_VBT`
+
 ## Acknowledgments
 
 This project has received funding from the European Union’s Research and Innovation Program Horizon Europe under Grant Agreement No. 101137289 (Virtual Brain Twin Project).
