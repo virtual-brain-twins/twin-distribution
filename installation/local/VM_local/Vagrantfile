@@ -6,21 +6,22 @@ VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # Every Vagrant virtual environment requires a box to build.
-    config.vm.box = "vbt/VM_VBT"
-    config.vm.define "VM_vbt"
+    config.vm.box = "vbt/local"
+
+    config.vm.define "VM_local"
 
     config.vm.network "public_network", use_dhcp_assigned_default_route: true
     config.vm.network "forwarded_port", guest: 8888, host: 8888
 
     config.vm.provider "virtualbox" do |vb|
         # name of the VirtualBox GUI
-        vb.name = "VM_vbt"
+        vb.name = "VM_local"
 
         # Customize the amount of memory on the VM:
-        vb.memory = "4096"
+        vb.memory = "2048"
 
         #number of cpus
-        vb.cpus = "4"
+        vb.cpus = "2"
 
   config.vm.boot_timeout = 86400  # 24h
   end
