@@ -1,5 +1,4 @@
 import os
-from pathlib import Path
 import sys
 from dedal.configuration.SpackConfig import SpackConfig
 from dedal.spack_factory.SpackOperationCreator import SpackOperationCreator
@@ -40,7 +39,7 @@ if __name__ == "__main__":
     spack_operation.reindex()
     spack_operation.update_buildcache_index(spack_operation.spack_config.buildcache_dir)
     spack_operation.concretize_spack_env()
-    spack_operation.install_packages(os.cpu_count())
+    spack_operation.install_packages(os.cpu_count(), signed=False)
     if not check_installed_all_spack_packages(data_dir / vbt_env.name, spack_operation):
         sys.exit(-1)
     if user:
