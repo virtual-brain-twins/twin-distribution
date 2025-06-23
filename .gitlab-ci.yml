@@ -70,43 +70,6 @@ test-use-cache:
       - .use_cache.generate_cache.log
     expire_in: 1 week
 
-build-cache-VM:
-  id_tokens:
-    SITE_ID_TOKEN:
-      aud: "https://gitlab.jsc.fz-juelich.de"
-  environment:
-    name: caching
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "schedule" && $OPERATION == "cache"'
-  image: ubuntu:24.04
-  stage: build
-  timeout: 48 hours
-  tags:
-    - juwels
-    - jacamar
-    - login
-    - shell
-  before_script:
-    - apt-get update
-    - chmod +x ./installation/local/shared/commons/bootstrap.sh
-    - ./installation/local/shared/commons/bootstrap.sh
-    - chmod +x ./installation/local/shared/release/release_vagrant_box_tools.sh
-    - ./installation/local/shared/release/release_vagrant_box_tools.sh
-  script:
-    - echo "VirtualBox version:"
-    - vboxmanage --version
-    - echo "Vagrant version:"
-    - vagrant --version
-    - cd ../VM_cache
-    - vagrant up
-    - mv ./installation/local/shared/.dedal.log .build_cache_VM.dedal.log
-    - mv ./installation/local/shared/.generate_cache.log .build_cache_VM.generate_cache.log
-  artifacts:
-    paths:
-      - .build_cache_VM.dedal.log
-      - .build_cache_VM.generate_cache.log
-    expire_in: never
-
 build-cache-docker:
   environment:
     name: caching-docker
