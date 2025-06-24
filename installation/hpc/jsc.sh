@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 set -e
-git clone -b generate-cache-job https://gitlab.jsc.fz-juelich.de/virtualbraintwin/virtualbraintwin.git
-cd ./instalation/local
 mkdir -p data
 cd ./data
 git clone https://oauth2:glpat-zpNBhLLm5PPGLk29gYAp@gitlab.ebrains.eu/ri/projects-and-initiatives/virtualbraintwin/tools/vbt-spack-env.git
