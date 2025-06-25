@@ -33,5 +33,6 @@ vboxmanage --version
 echo "Vagrant version:"
 vagrant --version
 
-cd ./shared/VM_release
+cd ./shared/release/VM_release
 vagrant up
+

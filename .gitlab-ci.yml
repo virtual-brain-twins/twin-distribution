@@ -18,22 +18,23 @@ test-create-cache:
   timeout: 1 hours
   tags:
     - $DOCKER_RUNNER_TAG
-  before_script:
-    - chmod +x ./installation/local/shared/commons/bootstrap.sh
-    - ./installation/local/shared/commons/bootstrap.sh
+  variables:
+    DEPLOY_TYPE: "master"
   script:
     - export TMPFILE=$(mktemp)
-    - chmod +x ./installation/local/shared/vbt.sh
-    - bash -c 'set -o pipefail && ./installation/local/shared/vbt.sh "create_cache.py" "./installation/local/" | tee "$TMPFILE"'
-    - mv ./installation/local/shared/.dedal.log .create_cache.dedal.log
-    - mv ./installation/local/shared/.generate_cache.log .create_cache.generate_cache.log
+    - chmod +x ./installation/shared/vbt.sh
+    - bash -c 'set -o pipefail && ./installation/shared/vbt.sh "create_cache.py" "./installation/" | tee "$TMPFILE"'
+    - mv ./installation/shared/.dedal.log .create_cache.dedal.log
+    - mv ./installation/shared/.generate_cache.log .create_cache.generate_cache.log
     - export RESULT=$(grep . "$TMPFILE" | tail -n 2 | head -n 1)
+    - mv $TMPFILE .complete_log.txt
     - |
       if [ "$RESULT" != "true" ]; then
        exit 1
       fi
   artifacts:
     paths:
+      - .complete_log.txt
       - .create_cache.dedal.log
       - .create_cache.generate_cache.log
     expire_in: 1 week
@@ -50,29 +51,30 @@ test-use-cache:
   timeout: 1 hours
   tags:
     - $DOCKER_RUNNER_TAG
-  before_script:
-    - chmod +x ./installation/local/shared/commons/bootstrap.sh
-    - ./installation/local/shared/commons/bootstrap.sh
+  variables:
+    DEPLOY_TYPE: "master"
   script:
     - export TMPFILE=$(mktemp)
-    - chmod +x ./installation/local/shared/vbt.sh
-    - bash -c 'set -o pipefail && ./installation/local/shared/vbt.sh "use_cache.py" "./installation/local/" | tee "$TMPFILE"'
-    - mv ./installation/local/shared/.dedal.log .use_cache.dedal.log
-    - mv ./installation/local/shared/.generate_cache.log .use_cache.generate_cache.log
+    - chmod +x ./installation/shared/vbt.sh
+    - bash -c 'set -o pipefail && ./installation/shared/vbt.sh "use_cache.py" "./installation/" | tee "$TMPFILE"'
+    - mv ./installation/shared/.dedal.log .use_cache.dedal.log
+    - mv ./installation/shared/.generate_cache.log .use_cache.generate_cache.log
     - export RESULT=$(grep . "$TMPFILE" | tail -n 2 | head -n 1)
+    - mv $TMPFILE .complete_log.txt
     - |
       if [ "$RESULT" != "true" ]; then
        exit 1
       fi
   artifacts:
     paths:
+      - .complete_log.txt
       - .use_cache.dedal.log
       - .use_cache.generate_cache.log
     expire_in: 1 week
 
-build-cache-docker:
+build-cache-ubuntu-local:
   environment:
-    name: caching-docker
+    name: caching-ubuntu
   rules:
     - if: '$CI_PIPELINE_SOURCE == "schedule" && $OPERATION == "cache"'
   image: ubuntu:24.04
@@ -80,17 +82,18 @@ build-cache-docker:
   timeout: 48 hours
   tags:
     - $DOCKER_RUNNER_TAG
-  before_script:
-    - chmod +x ./installation/local/shared/commons/bootstrap.sh
-    - ./installation/local/shared/commons/bootstrap.sh
-    - gcc --version
+  variables:
+    DEPLOY_TYPE: "local"
+    CONCRETIZE_OCI_VERSION: "CONCRETIZE_OCI_VERSION_UBUNTU"
+    BUILDCACHE_OCI_VERSION: "BUILDCACHE_OCI_VERSION_UBUNTU"
   script:
     - export TMPFILE=$(mktemp)
-    - chmod +x ./installation/local/shared/vbt.sh
-    - bash -c 'set -o pipefail && ./installation/local/shared/vbt.sh "create_cache.py" "./installation/local/" | tee "$TMPFILE"'
-    - mv ./installation/local/shared/.dedal.log .build_cache_docker.dedal.log
-    - mv ./installation/local/shared/.generate_cache.log .build_cache_docker.generate_cache.log
+    - chmod +x ./installation/shared/vbt.sh
+    - bash -c 'set -o pipefail && ./installation/shared/vbt.sh "create_cache.py" "./installation/" | tee "$TMPFILE"'
+    - mv ./installation/shared/.dedal.log .build_cache_ubuntu_local.dedal.log
+    - mv ./installation/shared/.generate_cache.log .build_cache_ubuntu_local.generate_cache.log
     - export RESULT=$(grep . "$TMPFILE" | tail -n 2 | head -n 1)
+    - mv $TMPFILE .complete_log.txt
     - |
       if [ "$RESULT" != "true" ]; then
        exit 1
@@ -98,13 +101,48 @@ build-cache-docker:
   artifacts:
     when: always
     paths:
-      - .build_cache_docker.dedal.log
-      - .build_cache_docker.generate_cache.log
+      - .complete_log.txt
+      - .build_cache_ubuntu_local.dedal.log
+      - .build_cache_ubuntu_local.generate_cache.log
+    expire_in: never
+
+build-cache-rocky-hpc:
+  environment:
+    name: caching-rocky
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule" && $OPERATION == "cache"'
+  image: rockylinux:9
+  stage: build
+  timeout: 48 hours
+  tags:
+    - $DOCKER_RUNNER_TAG
+  variables:
+    DEPLOY_TYPE: "hpc"
+    CONCRETIZE_OCI_VERSION: "CONCRETIZE_OCI_VERSION_ROCKY"
+    BUILDCACHE_OCI_VERSION: "BUILDCACHE_OCI_VERSION_ROCKY"
+  script:
+    - export TMPFILE=$(mktemp)
+    - chmod +x ./installation/shared/vbt.sh
+    - bash -c 'set -o pipefail && ./installation/shared/vbt.sh "create_cache.py" "./installation/" | tee "$TMPFILE"'
+    - mv ./installation/shared/.dedal.log .build_cache_ubuntu_rocky.dedal.log
+    - mv ./installation/shared/.generate_cache.log .build_cache_ubuntu_rocky.generate_cache.log
+    - export RESULT=$(grep . "$TMPFILE" | tail -n 2 | head -n 1)
+    - mv $TMPFILE .complete_log.txt
+    - |
+      if [ "$RESULT" != "true" ]; then
+       exit 1
+      fi
+  artifacts:
+    when: always
+    paths:
+      - .complete_log.txt
+      - .build_cache_ubuntu_rocky.dedal.log
+      - .build_cache_ubuntu_rocky.generate_cache.log
     expire_in: never
 
 create-box:
   environment:
-    name: caching
+    name: caching-ubuntu
   rules:
     - if: $CI_COMMIT_TAG
   image: ubuntu:24.04
@@ -115,8 +153,8 @@ create-box:
     - $SHELL_RUNNER_TAG
   before_script:
     # install VirtualBox and Vagrant on the Ci runner
-    - chmod +x ./installation/local/shared/commons/vagrant_box_tools.sh
-    - ./installation/local/shared/commons/vagrant_box_tools.sh
+    - chmod +x ./installation/shared/release/release_vagrant_box_tools.sh
+    - ./installation/shared/release1/release_vagrant_box_tools.sh
   script:
     # Output version to verify install
     - echo "VirtualBox version:"

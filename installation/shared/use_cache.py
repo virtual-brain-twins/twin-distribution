@@ -1,5 +1,4 @@
 import os
-import sys
 from dedal.configuration.SpackConfig import SpackConfig
 from dedal.spack_factory.SpackOperationCreator import SpackOperationCreator
 

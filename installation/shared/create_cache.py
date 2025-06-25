@@ -1,4 +1,3 @@
-import sys
 from pathlib import Path
 from dedal.configuration.GpgConfig import GpgConfig
 from dedal.configuration.SpackConfig import SpackConfig
@@ -28,7 +27,7 @@ if __name__ == "__main__":
     spack_operation.setup_spack_env()
     spack_operation.concretize_spack_env()
     spack_operation.install_packages(os.cpu_count())
-    if not check_installed_all_spack_packages(Path('../').resolve() / data_dir / vbt_env.name, spack_operation):
+    if not check_installed_all_spack_packages(Path('../local/').resolve() / data_dir / vbt_env.name, spack_operation):
         print('false')
     else:
         print('true')
