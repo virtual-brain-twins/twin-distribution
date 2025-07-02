@@ -48,9 +48,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         CONCRETIZE_OCI_PROJECT:Shellwords.escape(ENV['CONCRETIZE_OCI_PROJECT']),
         CONCRETIZE_OCI_VERSION:Shellwords.escape(ENV['CONCRETIZE_OCI_VERSION']),
 
-        VBT_SPACK_ENV_ACCESS_TOKEN:Shellwords.escape(ENV['VBT_SPACK_ENV_ACCESS_TOKEN']),
+        SPACK_ENV_ACCESS_TOKEN:Shellwords.escape(ENV['SPACK_ENV_ACCESS_TOKEN']),
         VBT_SPACK_ENV_NAME:Shellwords.escape(ENV['VBT_SPACK_ENV_NAME']),
-        VBT_SPACK_ENV_NAME:Shellwords.escape(ENV['DEPLOY_TYPE']),
         DEPLOY_TYPE:Shellwords.escape(ENV['DEPLOY_TYPE']),
     }
   end
