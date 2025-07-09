@@ -1,5 +1,6 @@
 import os
 from dedal.configuration.SpackConfig import SpackConfig
+from dedal.enum.SpackViewEnum import SpackViewEnum
 from dedal.spack_factory.SpackOperationCreator import SpackOperationCreator
 
 from commons.utils import append_command_to_file
@@ -9,13 +10,14 @@ from vbt_config import user, home_path, set_env_vars, install_dir, data_dir, bas
 
 if __name__ == "__main__":
     spack_config = SpackConfig(env=vbt_env,
+                               view=SpackViewEnum.VIEW,
                                repos=[ebrains_repo],
                                install_dir=install_dir,
                                upstream_instance=None,
-                               system_name='VBT',
+                               system_name=os.getenv('SYSTEMNAME'),
                                concretization_dir=concretization_dir,
-                               buildcache_dir=buildcache_dir,
                                gpg=None,
+                               buildcache_dir=buildcache_dir,
                                use_spack_global=False,
                                cache_version_build=os.getenv('BUILDCACHE_OCI_VERSION'),
                                cache_version_concretize=os.getenv('CONCRETIZE_OCI_VERSION'),
@@ -38,7 +40,7 @@ if __name__ == "__main__":
     spack_operation.reindex()
     spack_operation.update_buildcache_index(spack_operation.spack_config.buildcache_dir)
     spack_operation.concretize_spack_env()
-    spack_operation.install_packages(os.cpu_count(), signed=False)
+    spack_operation.install_packages(os.cpu_count())
     if not check_installed_all_spack_packages(data_dir / vbt_env.name, spack_operation):
         print('false')
     else:

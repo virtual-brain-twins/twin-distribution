@@ -24,7 +24,7 @@ vbt_spack_env_name = os.getenv('VBT_SPACK_ENV_NAME')
 if home_path:
     install_dir = Path(f'{home_path}/').resolve()
 else:
-    install_dir = Path('../local/').resolve()
+    install_dir = Path('../').resolve()
 data_dir = install_dir / 'data'
 os.makedirs(data_dir, exist_ok=True)
 concretization_dir = data_dir / 'concretize_cache'
@@ -51,3 +51,4 @@ def set_env_vars():
         set_bashrc_variable('SPACK_ENV_ACCESS_TOKEN', os.getenv('SPACK_ENV_ACCESS_TOKEN'), bashrc_path=bashrc_path)
         set_bashrc_variable('VBT_SPACK_ENV_NAME', os.getenv('VBT_SPACK_ENV_NAME'), bashrc_path=bashrc_path)
         set_bashrc_variable('DEPLOY_TYPE', os.getenv('DEPLOY_TYPE'), bashrc_path=bashrc_path)
+        set_bashrc_variable('SYSTEMNAME', os.getenv('SYSTEMNAME'), bashrc_path=bashrc_path)

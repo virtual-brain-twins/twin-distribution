@@ -3,9 +3,6 @@ stages:
   - build
   - release
 
-variables:
-  DEBIAN_FRONTEND: noninteractive
-
 test-create-cache:
   environment:
     name: testing
@@ -79,7 +76,7 @@ build-cache-ubuntu-local:
     - if: '$CI_PIPELINE_SOURCE == "schedule" && $OPERATION == "cache"'
   image: ubuntu:24.04
   stage: build
-  timeout: 48 hours
+  timeout: 72 hours
   tags:
     - $DOCKER_RUNNER_TAG
   variables:
@@ -107,20 +104,28 @@ build-cache-ubuntu-local:
     expire_in: never
 
 build-cache-rocky-hpc:
+  variables:
+    CUSTOM_CI_BUILDS_DIR: /p/scratch/vbt/vbt-spack/vbt_spack_kernel_job
+    HOME: /p/scratch/vbt/vbt-spack/vbt_spack_kernel_job
+    SPACK_USER_CONFIG_PATH: /p/scratch/vbt/vbt-spack/vbt_spack_kernel_job
+    DEPLOY_TYPE: "hpc"
+  id_tokens:
+    SITE_ID_TOKEN:
+      aud: "https://gitlab.jsc.fz-juelich.de"
   environment:
     name: caching-rocky
   rules:
     - if: '$CI_PIPELINE_SOURCE == "schedule" && $OPERATION == "cache"'
-  image: rockylinux:9
   stage: build
-  timeout: 48 hours
+  timeout: 72 hours
   tags:
-    - $DOCKER_RUNNER_TAG
-  variables:
-    DEPLOY_TYPE: "hpc"
-    CONCRETIZE_OCI_VERSION: "CONCRETIZE_OCI_VERSION_ROCKY"
-    BUILDCACHE_OCI_VERSION: "BUILDCACHE_OCI_VERSION_ROCKY"
+    - juwels
+    - jacamar
+    - login
+    - shell
   script:
+    - gcc --version
+    - module load StdEnv/2025
     - export TMPFILE=$(mktemp)
     - chmod +x ./installation/shared/vbt.sh
     - bash -c 'set -o pipefail && ./installation/shared/vbt.sh "create_cache.py" "./installation/" | tee "$TMPFILE"'
