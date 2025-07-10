@@ -1,7 +1,7 @@
 from pathlib import Path
 from dedal.configuration.SpackConfig import SpackConfig
 import os
-
+import shutil
 from dedal.enum.SpackViewEnum import SpackViewEnum
 from dedal.spack_factory.SpackOperationCreator import SpackOperationCreator
 from commons.utils import check_installed_all_spack_packages
@@ -30,6 +30,12 @@ if __name__ == "__main__":
     spack_operation.setup_spack_env()
     spack_operation.concretize_spack_env()
     spack_operation.install_packages(os.cpu_count())
+    spack_operation.remove_mirror('local_cache')
+    spack_operation.spack_clean()
+    if concretization_dir.exists() and concretization_dir.is_dir():
+        shutil.rmtree(concretization_dir)
+    if buildcache_dir.exists() and buildcache_dir.is_dir():
+        shutil.rmtree(buildcache_dir)
     if not check_installed_all_spack_packages(Path('../').resolve() / data_dir / vbt_env.name, spack_operation):
         print('false')
     else:
