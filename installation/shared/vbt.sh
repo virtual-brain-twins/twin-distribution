@@ -40,6 +40,8 @@ pip install .
 cd ../shared || exit
 python3 "$1"
 
+chmod +x ./create_vbt_kernel.sh
+
 end_time=$(date +%s)
 runtime=$((end_time - start_time))
 echo "Total runtime: $runtime seconds"
