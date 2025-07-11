@@ -1,8 +1,8 @@
 import os
-import sys
 from dedal.configuration.SpackConfig import SpackConfig
+from dedal.enum.SpackViewEnum import SpackViewEnum
 from dedal.spack_factory.SpackOperationCreator import SpackOperationCreator
-
+import shutil
 from commons.utils import append_command_to_file
 from commons.utils import check_installed_all_spack_packages
 from vbt_config import user, home_path, set_env_vars, install_dir, data_dir, bashrc_path, buildcache_dir, \
@@ -10,13 +10,14 @@ from vbt_config import user, home_path, set_env_vars, install_dir, data_dir, bas
 
 if __name__ == "__main__":
     spack_config = SpackConfig(env=vbt_env,
+                               view=SpackViewEnum.VIEW,
                                repos=[ebrains_repo],
                                install_dir=install_dir,
                                upstream_instance=None,
-                               system_name='VBT',
+                               system_name=os.getenv('SYSTEMNAME'),
+                               gpg=None,
                                concretization_dir=concretization_dir,
                                buildcache_dir=buildcache_dir,
-                               gpg=None,
                                use_spack_global=False,
                                cache_version_build=os.getenv('BUILDCACHE_OCI_VERSION'),
                                cache_version_concretize=os.getenv('CONCRETIZE_OCI_VERSION'),
@@ -39,9 +40,17 @@ if __name__ == "__main__":
     spack_operation.reindex()
     spack_operation.update_buildcache_index(spack_operation.spack_config.buildcache_dir)
     spack_operation.concretize_spack_env()
-    spack_operation.install_packages(os.cpu_count(), signed=False)
+    spack_operation.install_packages(os.cpu_count())
+    spack_operation.remove_mirror('local_cache')
+    spack_operation.spack_clean()
+    if concretization_dir.exists() and concretization_dir.is_dir():
+        shutil.rmtree(concretization_dir)
+    if buildcache_dir.exists() and buildcache_dir.is_dir():
+        shutil.rmtree(buildcache_dir)
     if not check_installed_all_spack_packages(data_dir / vbt_env.name, spack_operation):
-        sys.exit(-1)
+        print('false')
+    else:
+        print('true')
     if user:
         append_command_to_file(command=f'spack env activate -p {str(data_dir / vbt_spack_env_name)}',
                                file_path=f'{home_path}/.bashrc')
