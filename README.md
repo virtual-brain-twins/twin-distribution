@@ -88,6 +88,11 @@ The default values are ```v1```.
       export $(grep -v '^#' <checkout path>\virtualbraintwin\installation\.env | xargs)
       ````
 
+4. **Starting jupyter lab with from the VM**
+  ````
+  jupyter lab --allow-root --ip=0.0.0.0 --no-browser
+  ````
+
 ## User:
 
 Hardware prerequisites allocated to the Ubuntu VM for the installation of the packages from the buildcache:
