@@ -5,8 +5,9 @@ from dedal.spack_factory.SpackOperationCreator import SpackOperationCreator
 import shutil
 from commons.utils import append_command_to_file
 from commons.utils import check_installed_all_spack_packages
+from installation.shared.commons.Deploy_Type import DeployType
 from vbt_config import user, home_path, set_env_vars, install_dir, data_dir, bashrc_path, buildcache_dir, \
-    concretization_dir, vbt_env, ebrains_repo, vbt_spack_env_name
+    concretization_dir, vbt_env, ebrains_repo, vbt_spack_env_name, deploy_type
 
 if __name__ == "__main__":
     spack_config = SpackConfig(env=vbt_env,
@@ -54,4 +55,7 @@ if __name__ == "__main__":
     if user:
         append_command_to_file(command=f'spack env activate -p {str(data_dir / vbt_spack_env_name)}',
                                file_path=f'{home_path}/.bashrc')
+        if deploy_type == DeployType.LOCAL.value:
+            append_command_to_file(command='jupyter lab --allow-root --ip=0.0.0.0 --no-browser',
+                                   file_path=f'{home_path}/.bashrc')
     os.system("exec bash")

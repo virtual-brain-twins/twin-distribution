@@ -21,6 +21,8 @@ elif [[ "$ID" == "ubuntu" || "$ID_LIKE" == *"debian"* ]]; then
     echo "Ubuntu 24.04"
     chmod +x ./shared/commons/bootstrap.sh
     bash ./shared/commons/bootstrap.sh
+    echo 'vagrant ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/vagrant
+    chmod 0440 /etc/sudoers.d/vagrant
 else
     echo "Unsupported OS"
     exit 1

@@ -15,6 +15,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     config.vm.synced_folder File.join(Dir.pwd, "../../shared"), "/home/vagrant/shared"
 
+    config.ssh.username = "vagrant"
+    config.ssh.password = "vagrant"
+    config.ssh.insert_key = false
+
     config.vm.provider "virtualbox" do |vb|
         # name of the VirtualBox GUI
         vb.name = "VM_vbt_user"
