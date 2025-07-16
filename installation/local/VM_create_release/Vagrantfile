@@ -29,11 +29,17 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
         vb.customize ["modifyvm", :id, "--nested-hw-virt", "on"]
 
-  config.vm.boot_timeout = 86400  # 24h
-  end
+    config.vm.boot_timeout = 86400  # 24h
+    end
 
-  # Define the bootstrap file: A (shell) script that runs after first setup of your box (= provisioning)
-  config.vm.provision "shell" do |shell|
+    config.vm.provision "shell", inline: <<-SHELL
+    apt update && apt install -y dos2unix
+    dos2unix /home/vagrant/shared/vbt.sh
+    SHELL
+
+
+    # Define the bootstrap file: A (shell) script that runs after first setup of your box (= provisioning)
+    config.vm.provision "shell" do |shell|
     shell.path = "../../shared/release/release_vagrant_box_tools.sh"
     shell.env = {
         BUILDCACHE_OCI_USERNAME:Shellwords.escape(ENV['BUILDCACHE_OCI_USERNAME']),
@@ -52,6 +58,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         VBT_SPACK_ENV_NAME:Shellwords.escape(ENV['VBT_SPACK_ENV_NAME']),
         DEPLOY_TYPE:Shellwords.escape(ENV['DEPLOY_TYPE']),
     }
-  end
+    end
 
 end

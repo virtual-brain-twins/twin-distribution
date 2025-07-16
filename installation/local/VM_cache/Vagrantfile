@@ -24,6 +24,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         vb.cpus = "10"
     end
 
+    config.vm.provision "shell", inline: <<-SHELL
+     apt update && apt install -y dos2unix
+     dos2unix /home/vagrant/shared/vbt.sh
+    SHELL
+
     # Define the bootstrap file: A (shell) script that runs after first setup of your box (= provisioning)
     config.vm.provision "shell" do |shell|
         shell.path = "../../shared/vbt.sh"

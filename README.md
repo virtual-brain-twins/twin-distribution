@@ -88,11 +88,6 @@ The default values are ```v1```.
       export $(grep -v '^#' <checkout path>\virtualbraintwin\installation\.env | xargs)
       ````
 
-4. **Starting jupyter lab with from the VM**
-  ````
-  jupyter lab --allow-root --ip=0.0.0.0 --no-browser
-  ````
-
 ## User:
 
 Hardware prerequisites allocated to the Ubuntu VM for the installation of the packages from the buildcache:
@@ -108,6 +103,25 @@ Hardware prerequisites allocated to the Ubuntu VM for the installation of the pa
 This hardware may vary depending on what package is installed in the spack environment.
 
 You can directly download the VM to attach it to VirtualBox by importing it as an appliance. The username and password are both "vagrant".
+
+## Manual steps (After the VM was started)
+
+1. **Starting jupyter lab with from the VM (this command is run automatically when the user connects to the VM via vagrant ssh)**
+  ````
+  jupyter lab --allow-root --ip=0.0.0.0 --no-browser
+  ````
+
+2. **Using TVB extensions**
+
+To use the extension's full capabilities, you need to retrieve the access token `CLB_AUTH` from [https://lab.ebrains.eu/](https://lab.ebrains.eu/) and set it on this VM.
+
+### Steps:
+
+1. **Close Jupyter Lab** if it is currently running.
+2. **Set the environment variable** `CLB_AUTH` with the retrieved token:
+   ```bash
+   export CLB_AUTH=<CLB_AUTH_TOKEN>
+3. **Start Jupyter Lab** 
 
 ## Developer:
 

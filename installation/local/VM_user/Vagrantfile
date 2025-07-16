@@ -29,11 +29,16 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         #number of cpus
         vb.cpus = "2"
 
-  config.vm.boot_timeout = 86400  # 24h
-  end
+    config.vm.boot_timeout = 86400  # 24h
+    end
 
-  # Define the bootstrap file: A (shell) script that runs after first setup of your box (= provisioning)
-  config.vm.provision "shell" do |shell|
+    config.vm.provision "shell", inline: <<-SHELL
+     apt update && apt install -y dos2unix
+     dos2unix /home/vagrant/shared/vbt.sh
+    SHELL
+
+    # Define the bootstrap file: A (shell) script that runs after first setup of your box (= provisioning)
+    config.vm.provision "shell" do |shell|
     shell.path = "../../shared/vbt.sh"
     shell.args = "use_cache.py /home/vagrant/"
     shell.env = {
@@ -53,6 +58,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         VBT_SPACK_ENV_NAME:Shellwords.escape(ENV['VBT_SPACK_ENV_NAME']),
         DEPLOY_TYPE:Shellwords.escape(ENV['DEPLOY_TYPE']),
     }
-  end
+    end
 
 end
