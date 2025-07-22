@@ -5,8 +5,9 @@ from dedal.spack_factory.SpackOperationCreator import SpackOperationCreator
 import shutil
 from commons.utils import append_command_to_file
 from commons.utils import check_installed_all_spack_packages
+from commons.Deploy_Type import DeployType
 from vbt_config import user, home_path, set_env_vars, install_dir, data_dir, bashrc_path, buildcache_dir, \
-    concretization_dir, vbt_env, ebrains_repo, vbt_spack_env_name
+    concretization_dir, vbt_env, ebrains_repo, vbt_spack_env_name, deploy_type
 
 if __name__ == "__main__":
     spack_config = SpackConfig(env=vbt_env,
@@ -27,6 +28,8 @@ if __name__ == "__main__":
     spack_operation.install_spack('0.23.1', bashrc_path=bashrc_path)
     if user:
         set_env_vars()
+        append_command_to_file(command=f'sudo chown -R {user}:{user} {install_dir}',
+                               file_path=f'{home_path}/.bashrc')
         spack_path = str(install_dir / 'spack')
         append_command_to_file(command=f'sudo chown -R {user}:{user} {spack_path}',
                                file_path=f'{home_path}/.bashrc')
@@ -54,4 +57,23 @@ if __name__ == "__main__":
     if user:
         append_command_to_file(command=f'spack env activate -p {str(data_dir / vbt_spack_env_name)}',
                                file_path=f'{home_path}/.bashrc')
+        if deploy_type == DeployType.LOCAL.value:
+            append_command_to_file(command=f'dos2unix {install_dir}/shared/create_vbt_kernel.sh',
+                                   file_path=f'{home_path}/.bashrc')
+            append_command_to_file(command=f'dos2unix {install_dir}/shared/remove_kernel.sh',
+                                   file_path=f'{home_path}/.bashrc')
+            append_command_to_file(command=f'sudo chown -R {user}:{user} {install_dir}/shared/remove_kernel.sh',
+                                   file_path=f'{home_path}/.bashrc')
+            append_command_to_file(command=f'chmod +x {install_dir}/shared/remove_kernel.sh',
+                                   file_path=f'{home_path}/.bashrc')
+            append_command_to_file(command=f'sudo chown -R {user}:{user} {install_dir}/shared/create_vbt_kernel.sh',
+                                   file_path=f'{home_path}/.bashrc')
+            append_command_to_file(command=f'chmod +x {install_dir}/shared/create_vbt_kernel.sh',
+                                   file_path=f'{home_path}/.bashrc')
+            append_command_to_file(command=f'bash {install_dir}/shared/create_vbt_kernel.sh',
+                                   file_path=f'{home_path}/.bashrc')
+            append_command_to_file(command=f'bash {install_dir}/shared/remove_kernel.sh',
+                                   file_path=f'{home_path}/.bashrc')
+            append_command_to_file(command='jupyter lab --allow-root --ip=0.0.0.0 --no-browser',
+                                   file_path=f'{home_path}/.bashrc')
     os.system("exec bash")
