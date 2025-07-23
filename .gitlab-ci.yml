@@ -1,6 +1,7 @@
 stages:
   - test
   - build
+  - sync
   - release
 
 test-create-cache:
@@ -144,6 +145,25 @@ build-cache-rocky-hpc:
       - .build_cache_ubuntu_rocky.dedal.log
       - .build_cache_ubuntu_rocky.generate_cache.log
     expire_in: never
+
+sync_to_github:
+  stage: sync
+  environment:
+    name: git-sync
+  image: ubuntu:24.04
+  tags:
+    - $DOCKER_RUNNER_TAG
+  only:
+    - master
+  before_script:
+    - apt-get update
+    - apt-get install -y git ca-certificates
+  script:
+    - git clone -b master https://oauth2:$GITLAB_TOKEN@gitlab.jsc.fz-juelich.de/virtualbraintwin/virtualbraintwin.git
+    - cd virtualbraintwin
+    - git remote add github https://$GITHUB_MIRROR_TOKEN@github.com/virtual-brain-twins/twin-distribution.git
+    - git push github master:master --force
+
 
 create-box:
   environment:
