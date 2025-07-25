@@ -1,19 +1,7 @@
 #!/bin/bash
 
 KERNEL_NAME="vbt-spack-env"
-KERNEL_DIR="/p/scratch/vbt/vbt-spack/vbt_spack_kernel/$KERNEL_VERSION/.local/share/jupyter/kernels/$KERNEL_NAME"
-
-if [ -f /etc/os-release ]; then
-    . /etc/os-release
-else
-    echo "Cannot determine OS. /etc/os-release is missing."
-    exit 1
-fi
-
-if [[ "$ID" != "ubuntu" && "$ID_LIKE" != *"debian"* ]]; then
-  echo "This script only runs on Ubuntu or Debian-based systems."
-  exit 1
-fi
+KERNEL_DIR="/home/vagrant/.local/share/jupyter/kernels/$KERNEL_NAME"
 
 # Only install if the kernel doesn't already exist
 if [ ! -d "$KERNEL_DIR" ]; then
@@ -40,7 +28,7 @@ if [ ! -d "$KERNEL_DIR" ]; then
   fi
 
   # Copy the custom launch script
-  cp "/p/scratch/vbt/vbt-spack/vbt_spack_kernel/$KERNEL_VERSION/kernel.sh" "$KERNEL_DIR/kernel.sh"
+  cp "/home/vagrant/shared/kernel.sh" "$KERNEL_DIR/kernel.sh"
   chmod +x "$KERNEL_DIR/kernel.sh"
   dos2unix "$KERNEL_DIR/kernel.sh"
 

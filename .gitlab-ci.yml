@@ -1,6 +1,7 @@
 stages:
   - test
   - build
+  - release_kernel
   - sync
   - release
 
@@ -104,17 +105,35 @@ build-cache-ubuntu-local:
       - .build_cache_ubuntu_local.generate_cache.log
     expire_in: never
 
+prep-hpc-environment:
+  environment:
+    name: caching-rocky
+  id_tokens:
+    SITE_ID_TOKEN:
+      aud: "https://gitlab.jsc.fz-juelich.de"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule" && $OPERATION == "cache"'
+  stage: build
+  timeout: 2 hours
+  tags:
+    - juwels
+    - jacamar
+    - login
+    - shell
+  script:
+    - rm -rf /p/scratch/vbt/vbt-spack/vbt_spack_kernel/$KERNEL_VERSION || exit -1
+
 build-cache-rocky-hpc:
+  environment:
+    name: caching-rocky
   variables:
-    CUSTOM_CI_BUILDS_DIR: /p/scratch/vbt/vbt-spack/vbt_spack_kernel_job
-    HOME: /p/scratch/vbt/vbt-spack/vbt_spack_kernel_job
-    SPACK_USER_CONFIG_PATH: /p/scratch/vbt/vbt-spack/vbt_spack_kernel_job
+    CUSTOM_CI_BUILDS_DIR: /p/scratch/vbt/vbt-spack/vbt_spack_kernel/$KERNEL_VERSION
+    HOME: /p/scratch/vbt/vbt-spack/vbt_spack_kernel/$KERNEL_VERSION
+    SPACK_USER_CONFIG_PATH: /p/scratch/vbt/vbt-spack/vbt_spack_kernel/$KERNEL_VERSION
     DEPLOY_TYPE: "hpc"
   id_tokens:
     SITE_ID_TOKEN:
       aud: "https://gitlab.jsc.fz-juelich.de"
-  environment:
-    name: caching-rocky
   rules:
     - if: '$CI_PIPELINE_SOURCE == "schedule" && $OPERATION == "cache"'
   stage: build
@@ -124,6 +143,8 @@ build-cache-rocky-hpc:
     - jacamar
     - login
     - shell
+  needs:
+    - prep-hpc-environment
   script:
     - gcc --version
     - module load StdEnv/2025
@@ -145,6 +166,30 @@ build-cache-rocky-hpc:
       - .build_cache_ubuntu_rocky.dedal.log
       - .build_cache_ubuntu_rocky.generate_cache.log
     expire_in: never
+
+release-vbt-kernel:
+  environment:
+    name: caching-rocky
+  variables:
+    CUSTOM_CI_BUILDS_DIR: /p/scratch/vbt/vbt-spack/vbt_spack_kernel/$KERNEL_VERSION
+    HOME: /p/scratch/vbt/vbt-spack/vbt_spack_kernel/$KERNEL_VERSION
+    SPACK_USER_CONFIG_PATH: /p/scratch/vbt/vbt-spack/vbt_spack_kernel/$KERNEL_VERSION
+    DEPLOY_TYPE: "hpc"
+  id_tokens:
+    SITE_ID_TOKEN:
+      aud: "https://gitlab.jsc.fz-juelich.de"
+  rules:
+    - if: '$OPERATION == "release"'
+  stage: build
+  timeout: 1 hours
+  tags:
+    - juwels
+    - jacamar
+    - login
+    - shell
+  script:
+    - gcc --version
+    - bash ./installation/hpc/create_vbt_kernel.sh
 
 sync_to_github:
   stage: sync
