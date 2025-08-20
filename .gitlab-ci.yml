@@ -1,8 +1,6 @@
 stages:
   - test
-  - cleanup
   - build
-  - release_kernel
   - sync
   - release
 
@@ -106,15 +104,16 @@ build-cache-ubuntu-local:
       - .build_cache_ubuntu_local.generate_cache.log
     expire_in: never
 
-prep-hpc-environment:
+.cleanup-hpc-environment-template:
   environment:
     name: caching-rocky
+  variables:
+    GIT_STRATEGY: none
   id_tokens:
     SITE_ID_TOKEN:
       aud: "https://gitlab.jsc.fz-juelich.de"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "schedule" && $OPERATION == "cache"'
-  stage: build
   timeout: 2 hours
   tags:
     - juwels
@@ -124,11 +123,15 @@ prep-hpc-environment:
   script:
     - rm -rf /p/scratch/vbt/vbt-spack/vbt_spack_kernel/$KERNEL_VERSION || exit -1
 
+prep-hpc-environment-build:
+  stage: build
+  extends: .cleanup-hpc-environment-template
+
 build-cache-rocky-hpc:
   environment:
     name: caching-rocky
   variables:
-    CUSTOM_CI_BUILDS_DIR: /p/scratch/vbt/vbt-spack/vbt_spack_kernel/$KERNEL_VERSION/
+    CUSTOM_CI_BUILDS_DIR: /p/scratch/vbt/vbt-spack/vbt_spack_kernel/$KERNEL_VERSION
     HOME: /p/scratch/vbt/vbt-spack/vbt_spack_kernel/$KERNEL_VERSION
     SPACK_USER_CONFIG_PATH: /p/scratch/vbt/vbt-spack/vbt_spack_kernel/$KERNEL_VERSION
     DEPLOY_TYPE: "hpc"
@@ -145,7 +148,7 @@ build-cache-rocky-hpc:
     - login
     - shell
   needs:
-    - prep-hpc-environment
+    - prep-hpc-environment-build
   script:
     - gcc --version
     - export FULL_PATH=$(pwd)
@@ -156,10 +159,13 @@ build-cache-rocky-hpc:
     - export TMPFILE=$(mktemp)
     - chmod +x ./installation/shared/vbt.sh
     - bash -c 'set -o pipefail && ./installation/shared/vbt.sh "create_cache.py" "./installation/" | tee "$TMPFILE"'
-    - mv ./installation/shared/.dedal.log .build_cache_ubuntu_rocky.dedal.log
-    - mv ./installation/shared/.generate_cache.log .build_cache_ubuntu_rocky.generate_cache.log
+    - pwd
+    - ls --all
+    - cp $CUSTOM_CI_BUILDS_DIR/virtualbraintwin/installation/shared/.dedal.log $CUSTOM_CI_BUILDS_DIR/virtualbraintwin/build_cache_ubuntu_rocky.dedal.log
+    - cp $CUSTOM_CI_BUILDS_DIR/virtualbraintwin/installation/shared/.generate_cache.log $CUSTOM_CI_BUILDS_DIR/virtualbraintwin/build_cache_ubuntu_rocky.generate_cache.log
     - export RESULT=$(grep . "$TMPFILE" | tail -n 2 | head -n 1)
-    - mv $TMPFILE .complete_log.txt
+    - cp $TMPFILE $CUSTOM_CI_BUILDS_DIR/virtualbraintwin/complete_log.txt
+    - ls --all
     - |
       if [ "$RESULT" != "true" ]; then
        exit 1
@@ -167,14 +173,79 @@ build-cache-rocky-hpc:
   artifacts:
     when: always
     paths:
-      - .complete_log.txt
-      - .build_cache_ubuntu_rocky.dedal.log
-      - .build_cache_ubuntu_rocky.generate_cache.log
+      - $CUSTOM_CI_BUILDS_DIR/virtualbraintwin/complete_log.txt
+      - $CUSTOM_CI_BUILDS_DIR/virtualbraintwin/build_cache_ubuntu_rocky.dedal.log
+      - $CUSTOM_CI_BUILDS_DIR/virtualbraintwin/build_cache_ubuntu_rocky.generate_cache.log
+    expire_in: never
+
+clean-hpc-environment-build:
+  stage: build
+  extends: .cleanup-hpc-environment-template
+  needs:
+    - build-cache-rocky-hpc
+
+prep-hpc-environment-release:
+  stage: release
+  rules:
+    - if: $CI_COMMIT_TAG
+  extends: .cleanup-hpc-environment-template
+
+install-vbt-spack-env-hpc:
+  environment:
+    name: caching-rocky
+  variables:
+    CUSTOM_CI_BUILDS_DIR: /p/scratch/vbt/vbt-spack/vbt_spack_kernel/$KERNEL_VERSION
+    HOME: /p/scratch/vbt/vbt-spack/vbt_spack_kernel/$KERNEL_VERSION
+    SPACK_USER_CONFIG_PATH: /p/scratch/vbt/vbt-spack/vbt_spack_kernel/$KERNEL_VERSION
+    DEPLOY_TYPE: "hpc"
+  id_tokens:
+    SITE_ID_TOKEN:
+      aud: "https://gitlab.jsc.fz-juelich.de"
+  rules:
+    - if: $CI_COMMIT_TAG
+  stage: release
+  timeout: 72 hours
+  tags:
+    - juwels
+    - jacamar
+    - login
+    - shell
+  needs:
+    - prep-hpc-environment-release
+  script:
+    - gcc --version
+    - export FULL_PATH=$(pwd)
+    - cd $CUSTOM_CI_BUILDS_DIR
+    - cp -r $FULL_PATH $CUSTOM_CI_BUILDS_DIR
+    - cd virtualbraintwin
+    - module load StdEnv/2025
+    - export TMPFILE=$(mktemp)
+    - chmod +x ./installation/shared/vbt.sh
+    - bash -c 'set -o pipefail && ./installation/shared/vbt.sh "use_cache.py" "./installation/" | tee "$TMPFILE"'
+    - pwd
+    - ls --all
+    - cp $CUSTOM_CI_BUILDS_DIR/virtualbraintwin/installation/shared/.dedal.log $CUSTOM_CI_BUILDS_DIR/virtualbraintwin/build_cache_ubuntu_rocky.dedal.log
+    - cp $CUSTOM_CI_BUILDS_DIR/virtualbraintwin/installation/shared/.generate_cache.log $CUSTOM_CI_BUILDS_DIR/virtualbraintwin/build_cache_ubuntu_rocky.generate_cache.log
+    - export RESULT=$(grep . "$TMPFILE" | tail -n 2 | head -n 1)
+    - cp $TMPFILE $CUSTOM_CI_BUILDS_DIR/virtualbraintwin/complete_log.txt
+    - ls --all
+    - |
+      if [ "$RESULT" != "true" ]; then
+       exit 1
+      fi
+  artifacts:
+    when: always
+    paths:
+      - $CUSTOM_CI_BUILDS_DIR/virtualbraintwin/complete_log.txt
+      - $CUSTOM_CI_BUILDS_DIR/virtualbraintwin/build_cache_ubuntu_rocky.dedal.log
+      - $CUSTOM_CI_BUILDS_DIR/virtualbraintwin/build_cache_ubuntu_rocky.generate_cache.log
     expire_in: never
 
 release-vbt-kernel:
   environment:
     name: caching-rocky
+  needs:
+    - install-vbt-spack-env-hpc
   variables:
     GIT_STRATEGY: none
     CUSTOM_CI_BUILDS_DIR: /p/scratch/vbt/vbt-spack/vbt_spack_kernel/$KERNEL_VERSION
@@ -202,12 +273,19 @@ release-vbt-kernel:
     - cd ./virtualbraintwin/installation/hpc/
     - bash ./create_hpc_vbt_kernel.sh
 
-cleanup-job:
-  stage: cleanup
+cleanup-release-env:
+  stage: release
+  environment:
+    name: caching-rocky
+  tags:
+    - juwels
+    - jacamar
+    - login
+    - shell
+  needs:
+    - release-vbt-kernel
   rules:
-#    - if: '$CI_COMMIT_TAG'
-    - if: '$CI_PIPELINE_SOURCE == "schedule" && $OPERATION == "cache"'
-    - when: never
+    - if: $CI_COMMIT_TAG
   variables:
     GIT_STRATEGY: none
   script:
@@ -258,9 +336,9 @@ create-box:
     - echo "Vagrant version:"
     - vagrant --version
     - cd $CI_PROJECT_DIR/installation/local/VM_user
-#    - vagrant up
-#    - cd /
-#    - vagrant package --base VM_vbt_user --output $BOX_NAME
+  #    - vagrant up
+  #    - cd /
+  #    - vagrant package --base VM_vbt_user --output $BOX_NAME
   artifacts:
     paths:
       - $BOX_NAME
@@ -269,7 +347,9 @@ create-box:
 release-gitlab:
   stage: release
   image: registry.gitlab.com/gitlab-org/release-cli:latest
-  needs: [ "release-vbt-kernel" ]
+  needs:
+    - release-vbt-kernel
+  #    - create-box
   tags:
     - $DOCKER_RUNNER_TAG
   rules:
