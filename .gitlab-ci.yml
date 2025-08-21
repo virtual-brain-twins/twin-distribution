@@ -121,7 +121,7 @@ build-cache-ubuntu-local:
     - login
     - shell
   script:
-    - rm -rf /p/scratch/vbt/vbt-spack/vbt_spack_kernel/$KERNEL_VERSION || exit -1
+    - rm -rf /p/scratch/vbt/vbt-spack/vbt_spack_kernel/${KERNEL_VERSION} || exit -1
 
 prep-hpc-environment-build:
   stage: build
@@ -159,13 +159,10 @@ build-cache-rocky-hpc:
     - export TMPFILE=$(mktemp)
     - chmod +x ./installation/shared/vbt.sh
     - bash -c 'set -o pipefail && ./installation/shared/vbt.sh "create_cache.py" "./installation/" | tee "$TMPFILE"'
-    - pwd
-    - ls --all
-    - cp $CUSTOM_CI_BUILDS_DIR/virtualbraintwin/installation/shared/.dedal.log $CUSTOM_CI_BUILDS_DIR/virtualbraintwin/build_cache_ubuntu_rocky.dedal.log
-    - cp $CUSTOM_CI_BUILDS_DIR/virtualbraintwin/installation/shared/.generate_cache.log $CUSTOM_CI_BUILDS_DIR/virtualbraintwin/build_cache_ubuntu_rocky.generate_cache.log
+    - cp $CUSTOM_CI_BUILDS_DIR/virtualbraintwin/installation/shared/.dedal.log $CI_PROJECT_DIR/build_cache_ubuntu_rocky.dedal.log
+    - cp $CUSTOM_CI_BUILDS_DIR/virtualbraintwin/installation/shared/.generate_cache.log $CI_PROJECT_DIR/build_cache_ubuntu_rocky.generate_cache.log
     - export RESULT=$(grep . "$TMPFILE" | tail -n 2 | head -n 1)
-    - cp $TMPFILE $CUSTOM_CI_BUILDS_DIR/virtualbraintwin/complete_log.txt
-    - ls --all
+    - cp $TMPFILE $CI_PROJECT_DIR/complete_log.txt
     - |
       if [ "$RESULT" != "true" ]; then
        exit 1
@@ -173,9 +170,9 @@ build-cache-rocky-hpc:
   artifacts:
     when: always
     paths:
-      - $CUSTOM_CI_BUILDS_DIR/virtualbraintwin/complete_log.txt
-      - $CUSTOM_CI_BUILDS_DIR/virtualbraintwin/build_cache_ubuntu_rocky.dedal.log
-      - $CUSTOM_CI_BUILDS_DIR/virtualbraintwin/build_cache_ubuntu_rocky.generate_cache.log
+      - $CI_PROJECT_DIR/complete_log.txt
+      - $CI_PROJECT_DIR/build_cache_ubuntu_rocky.dedal.log
+      - $CI_PROJECT_DIR/build_cache_ubuntu_rocky.generate_cache.log
     expire_in: never
 
 clean-hpc-environment-build:
@@ -213,6 +210,9 @@ install-vbt-spack-env-hpc:
   needs:
     - prep-hpc-environment-release
   script:
+    - echo $CUSTOM_CI_BUILDS_DIR
+    - echo $CI_PROJECT_DIR
+    - pwd
     - gcc --version
     - export FULL_PATH=$(pwd)
     - cd $CUSTOM_CI_BUILDS_DIR
@@ -222,13 +222,10 @@ install-vbt-spack-env-hpc:
     - export TMPFILE=$(mktemp)
     - chmod +x ./installation/shared/vbt.sh
     - bash -c 'set -o pipefail && ./installation/shared/vbt.sh "use_cache.py" "./installation/" | tee "$TMPFILE"'
-    - pwd
-    - ls --all
-    - cp $CUSTOM_CI_BUILDS_DIR/virtualbraintwin/installation/shared/.dedal.log $CUSTOM_CI_BUILDS_DIR/virtualbraintwin/build_cache_ubuntu_rocky.dedal.log
-    - cp $CUSTOM_CI_BUILDS_DIR/virtualbraintwin/installation/shared/.generate_cache.log $CUSTOM_CI_BUILDS_DIR/virtualbraintwin/build_cache_ubuntu_rocky.generate_cache.log
+    - cp $CUSTOM_CI_BUILDS_DIR/virtualbraintwin/installation/shared/.dedal.log $CI_PROJECT_DIR/build_cache_ubuntu_rocky.dedal.log
+    - cp $CUSTOM_CI_BUILDS_DIR/virtualbraintwin/installation/shared/.generate_cache.log $CI_PROJECT_DIR/build_cache_ubuntu_rocky.generate_cache.log
     - export RESULT=$(grep . "$TMPFILE" | tail -n 2 | head -n 1)
-    - cp $TMPFILE $CUSTOM_CI_BUILDS_DIR/virtualbraintwin/complete_log.txt
-    - ls --all
+    - cp $TMPFILE $CI_PROJECT_DIR/complete_log.txt
     - |
       if [ "$RESULT" != "true" ]; then
        exit 1
@@ -236,16 +233,42 @@ install-vbt-spack-env-hpc:
   artifacts:
     when: always
     paths:
-      - $CUSTOM_CI_BUILDS_DIR/virtualbraintwin/complete_log.txt
-      - $CUSTOM_CI_BUILDS_DIR/virtualbraintwin/build_cache_ubuntu_rocky.dedal.log
-      - $CUSTOM_CI_BUILDS_DIR/virtualbraintwin/build_cache_ubuntu_rocky.generate_cache.log
+      - $CI_PROJECT_DIR/complete_log.txt
+      - $CI_PROJECT_DIR/build_cache_ubuntu_rocky.dedal.log
+      - $CI_PROJECT_DIR/build_cache_ubuntu_rocky.generate_cache.log
     expire_in: never
+
+cleanup-release-env:
+  stage: release
+  environment:
+    name: caching-rocky
+  id_tokens:
+    SITE_ID_TOKEN:
+      aud: "https://gitlab.jsc.fz-juelich.de"
+  tags:
+    - juwels
+    - jacamar
+    - login
+    - shell
+  needs:
+    - install-vbt-spack-env-hpc
+  rules:
+    - if: $CI_COMMIT_TAG
+  variables:
+    GIT_STRATEGY: none
+    CUSTOM_CI_BUILDS_DIR: /p/scratch/vbt/vbt-spack/vbt_spack_kernel/$KERNEL_VERSION
+  script:
+    - echo "Cleaning up project dir..."
+    - ls --all
+    - echo ${CUSTOM_CI_BUILDS_DIR}/${USER}
+    - rm -rf ${CUSTOM_CI_BUILDS_DIR}/${USER}
+    - ls --all
 
 release-vbt-kernel:
   environment:
     name: caching-rocky
   needs:
-    - install-vbt-spack-env-hpc
+    - cleanup-release-env
   variables:
     GIT_STRATEGY: none
     CUSTOM_CI_BUILDS_DIR: /p/scratch/vbt/vbt-spack/vbt_spack_kernel/$KERNEL_VERSION
@@ -273,25 +296,6 @@ release-vbt-kernel:
     - cd ./virtualbraintwin/installation/hpc/
     - bash ./create_hpc_vbt_kernel.sh
 
-cleanup-release-env:
-  stage: release
-  environment:
-    name: caching-rocky
-  tags:
-    - juwels
-    - jacamar
-    - login
-    - shell
-  needs:
-    - release-vbt-kernel
-  rules:
-    - if: $CI_COMMIT_TAG
-  variables:
-    GIT_STRATEGY: none
-  script:
-    - echo "Cleaning up project dir..."
-    - rm -rf $CUSTOM_CI_BUILDS_DIR/$USER
-
 sync_to_github:
   stage: sync
   environment:
@@ -309,7 +313,6 @@ sync_to_github:
     - cd virtualbraintwin
     - git remote add github https://$GITHUB_MIRROR_TOKEN@github.com/virtual-brain-twins/twin-distribution.git
     - git push github master:master --force
-
 
 create-box:
   environment:

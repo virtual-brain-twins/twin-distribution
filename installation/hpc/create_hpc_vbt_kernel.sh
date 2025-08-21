@@ -17,8 +17,6 @@ if [ -d "${KERNEL_SPECS_DIR}/${KERNEL_NAME}" ]; then
   echo "       Rename kernel name or remove directory."
 fi
 
-echo $KERNEL_SPECS_DIR
-
 # 1. Create the kernel
 export KERNEL_DIR=${KERNELS_DIR}/${KERNEL_NAME}
 if [ -d "${KERNEL_DIR}" ]; then
