@@ -1,7 +1,7 @@
 #!/bin/bash
 
 KERNEL_NAME="vbt-spack-env"
-KERNEL_DIR="/home/vagrant/.local/share/jupyter/kernels/$KERNEL_NAME"
+KERNEL_DIR="/p/scratch/vbt/vbt-spack/vbt_spack_kernel/$KERNEL_VERSION/.local/share/jupyter/kernels/$KERNEL_NAME"
 
 if [ -f /etc/os-release ]; then
     . /etc/os-release
@@ -40,7 +40,7 @@ if [ ! -d "$KERNEL_DIR" ]; then
   fi
 
   # Copy the custom launch script
-  cp "/home/vagrant/shared/kernel.sh" "$KERNEL_DIR/kernel.sh"
+  cp "/p/scratch/vbt/vbt-spack/vbt_spack_kernel/$KERNEL_VERSION/kernel.sh" "$KERNEL_DIR/kernel.sh"
   chmod +x "$KERNEL_DIR/kernel.sh"
   dos2unix "$KERNEL_DIR/kernel.sh"
 

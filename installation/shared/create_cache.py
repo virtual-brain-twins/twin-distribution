@@ -29,7 +29,7 @@ if __name__ == "__main__":
     spack_operation.install_spack('0.23.1', bashrc_path=bashrc_path)
     spack_operation.setup_spack_env()
     spack_operation.concretize_spack_env()
-    spack_operation.install_packages(os.cpu_count())
+    spack_operation.install_packages(min(os.cpu_count() or 1, 10))
     spack_operation.remove_mirror('local_cache')
     spack_operation.spack_clean()
     if concretization_dir.exists() and concretization_dir.is_dir():
