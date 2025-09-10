@@ -36,7 +36,7 @@ python3 -m pip install --upgrade setuptools
 gcc --version
 
 # The custom Linux distribution designed for the VBT is fully configured with all modifications from bootstrap.sh applied.
-git clone -b VT-109-HPC https://gitlab.ebrains.eu/ri/tech-hub/platform/esd/dedal.git
+git clone https://gitlab.ebrains.eu/ri/tech-hub/platform/esd/dedal.git
 cd ./dedal || exit
 pip install .
 

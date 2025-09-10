@@ -7,10 +7,6 @@ stages:
 test-create-cache:
   environment:
     name: testing
-  rules:
-    - if: '$CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "dev"'
-      when: always
-    - when: never
   image: ubuntu:24.04
   stage: test
   timeout: 1 hours
@@ -40,10 +36,6 @@ test-create-cache:
 test-use-cache:
   environment:
     name: testing
-  rules:
-    - if: '$CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "dev"'
-      when: always
-    - when: never
   image: ubuntu:24.04
   stage: test
   timeout: 1 hours
@@ -303,8 +295,10 @@ sync_to_github:
   image: ubuntu:24.04
   tags:
     - $DOCKER_RUNNER_TAG
-  only:
-    - master
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master" && $CI_PIPELINE_SOURCE == "push"'
+      when: on_success
+    - when: never
   before_script:
     - apt-get update
     - apt-get install -y git ca-certificates
