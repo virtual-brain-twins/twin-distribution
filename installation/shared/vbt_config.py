@@ -29,10 +29,11 @@ data_dir = install_dir / 'data'
 os.makedirs(data_dir, exist_ok=True)
 concretization_dir = data_dir / 'concretize_cache'
 buildcache_dir = data_dir / 'binary_cache'
+vbt_esd_env_access_token = os.getenv('ESD_ENV_ACCESS_TOKEN')
 
-ebrains_spack_builds_git = 'https://gitlab.ebrains.eu/ri/tech-hub/platform/esd/ebrains-spack-builds.git'
+ebrains_spack_builds_git = f'https://oauth2:{vbt_esd_env_access_token}@gitlab.ebrains.eu/adrianciu/ebrains-spack-builds.git'
 spack_env_git = f'https://oauth2:{vbt_spack_env_access_token}@gitlab.ebrains.eu/ri/projects-and-initiatives/virtualbraintwin/tools/{vbt_spack_env_name}.git'
-ebrains_repo = SpackDescriptor('ebrains-spack-builds', data_dir, ebrains_spack_builds_git)
+ebrains_repo = SpackDescriptor('ebrains-spack-builds', data_dir, ebrains_spack_builds_git, git_branch='vbt-esd')
 deploy_type = os.getenv('DEPLOY_TYPE')
 vbt_env = SpackDescriptor(vbt_spack_env_name, data_dir, spack_env_git, git_branch=f'{deploy_type}')
 
