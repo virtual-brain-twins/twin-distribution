@@ -18,6 +18,7 @@ test-create-cache:
     - export TMPFILE=$(mktemp)
     - chmod +x ./installation/shared/vbt.sh
     - bash -c 'set -o pipefail && ./installation/shared/vbt.sh "create_cache.py" "./installation/" | tee "$TMPFILE"'
+    - ls --all ./installation/shared/
     - mv ./installation/shared/.generate_cache.log .create_cache.generate_cache.log
     - export RESULT=$(grep . "$TMPFILE" | tail -n 2 | head -n 1)
     - mv $TMPFILE .complete_log.txt
@@ -45,7 +46,12 @@ test-use-cache:
     - export TMPFILE=$(mktemp)
     - chmod +x ./installation/shared/vbt.sh
     - bash -c 'set -o pipefail && ./installation/shared/vbt.sh "use_cache.py" "./installation/" | tee "$TMPFILE"'
+    - echo "==============================================="
+    - ls
+    - echo "==============================================="
+    - ls --all ./installation/shared/
     - mv ./installation/shared/.generate_cache.log .use_cache.generate_cache.log
+    - echo "==============================================="
     - export RESULT=$(grep . "$TMPFILE" | tail -n 2 | head -n 1)
     - mv $TMPFILE .complete_log.txt
     - |
