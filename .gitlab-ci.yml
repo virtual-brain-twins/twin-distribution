@@ -45,6 +45,7 @@ test-use-cache:
   script:
     - export TMPFILE=$(mktemp)
     - chmod +x ./installation/shared/vbt.sh
+    - ls
     - bash -c 'set -o pipefail && ./installation/shared/vbt.sh "use_cache.py" "./installation/" | tee "$TMPFILE"'
     - echo "==============================================="
     - ls
