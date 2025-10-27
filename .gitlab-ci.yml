@@ -55,6 +55,7 @@ test-use-cache:
     - echo "==============================================="
     - export RESULT=$(grep . "$TMPFILE" | tail -n 2 | head -n 1)
     - mv $TMPFILE .complete_log.txt
+    - source /builds/virtualbraintwin/infrastructure/virtualbraintwin/installation/spack/share/spack/setup-env.sh && spack env activate -p  /builds/virtualbraintwin/infrastructure/virtualbraintwin/installation/data/test-spack-env && spack find -c
     - |
       if [ "$RESULT" != "true" ]; then
        exit 1
