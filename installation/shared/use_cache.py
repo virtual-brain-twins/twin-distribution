@@ -16,7 +16,6 @@ if __name__ == "__main__":
                                install_dir=install_dir,
                                upstream_instance=None,
                                system_name=os.getenv('SYSTEMNAME'),
-                               gpg=None,
                                concretization_dir=concretization_dir,
                                buildcache_dir=buildcache_dir,
                                use_spack_global=False,
@@ -40,9 +39,10 @@ if __name__ == "__main__":
         append_command_to_file(command=f'sudo chown -R {user}:{user} {vbt_env_path}',
                                file_path=f'{home_path}/.bashrc')
     spack_operation.setup_spack_env()
+    spack_operation.concretize_spack_env()
     spack_operation.reindex()
     spack_operation.update_buildcache_index(spack_operation.spack_config.buildcache_dir)
-    spack_operation.concretize_spack_env()
+    spack_operation.spack_clean()
     spack_operation.install_packages(min(os.cpu_count() or 1, 10))
     spack_operation.remove_mirror('local_cache')
     spack_operation.spack_clean()

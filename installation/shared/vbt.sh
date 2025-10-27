@@ -21,6 +21,7 @@ if [[ "$ID" == "rocky" || "$ID_LIKE" == *"rhel"* ]]; then
     module load Python
 elif [[ "$ID" == "ubuntu" || "$ID_LIKE" == *"debian"* ]]; then
     echo "Ubuntu 24.04"
+    ls --all
     dos2unix ./shared/commons/bootstrap.sh
     chmod +x ./shared/commons/bootstrap.sh
     bash ./shared/commons/bootstrap.sh
