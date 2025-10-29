@@ -27,6 +27,7 @@ test-create-cache:
        exit 1
       fi
   artifacts:
+    when: always
     paths:
       - .complete_log.txt
       - .create_cache.generate_cache.log
@@ -42,6 +43,8 @@ test-use-cache:
     - $DOCKER_RUNNER_TAG
   variables:
     DEPLOY_TYPE: "master"
+  needs:
+    - test-create-cache
   script:
     - export TMPFILE=$(mktemp)
     - chmod +x ./installation/shared/vbt.sh
@@ -61,6 +64,7 @@ test-use-cache:
        exit 1
       fi
   artifacts:
+    when: always
     paths:
       - .complete_log.txt
       - .use_cache.generate_cache.log
@@ -269,8 +273,6 @@ cleanup-release-env:
     CUSTOM_CI_BUILDS_DIR: /p/scratch/vbt/vbt-spack/vbt_spack_kernel/$KERNEL_VERSION
   script:
     - echo "Cleaning up project dir..."
-    - pwd
-    - ls --all
   after_script:
     - echo ${CUSTOM_CI_BUILDS_DIR}/${USER}
     - rm -rf ${CUSTOM_CI_BUILDS_DIR}/${USER}
@@ -357,6 +359,7 @@ create-box:
   #    - cd /
   #    - vagrant package --base VM_vbt_user --output $BOX_NAME
   artifacts:
+    when: always
     paths:
       - $BOX_NAME
     expire_in: never
@@ -377,6 +380,7 @@ release-gitlab:
     tag_name: '$CI_COMMIT_TAG'
     description: '$CI_COMMIT_TAG'
   artifacts:
+    when: always
     paths:
       - $BOX_NAME
     expire_in: never
