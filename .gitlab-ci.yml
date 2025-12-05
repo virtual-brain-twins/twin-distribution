@@ -276,7 +276,6 @@ cleanup-release-env:
   after_script:
     - echo ${CUSTOM_CI_BUILDS_DIR}/${USER}
     - rm -rf ${CUSTOM_CI_BUILDS_DIR}/${USER}
-    - ls --all
 
 release-vbt-kernel:
   environment:
@@ -289,6 +288,7 @@ release-vbt-kernel:
     HOME: /p/scratch/vbt/vbt-spack/vbt_spack_kernel/$KERNEL_VERSION
     SPACK_USER_CONFIG_PATH: /p/scratch/vbt/vbt-spack/vbt_spack_kernel/$KERNEL_VERSION
     DEPLOY_TYPE: "hpc"
+    JSC_OVERRIDE_TOOLCHAIN_CHECK: "1"
   id_tokens:
     SITE_ID_TOKEN:
       aud: "https://gitlab.jsc.fz-juelich.de"
@@ -305,7 +305,6 @@ release-vbt-kernel:
     - export FULL_PATH=$(pwd)
     - echo $FULL_PATH
     - cd $CUSTOM_CI_BUILDS_DIR
-    - ls
     - echo $USER
     - cd ./virtualbraintwin/installation/hpc/
     - bash ./create_hpc_vbt_kernel.sh

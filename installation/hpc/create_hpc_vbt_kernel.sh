@@ -1,5 +1,7 @@
 #!/bin/bash
 
+#set -euxo pipefail
+
 export KERNEL_NAME="vbt_kernel_${KERNEL_VERSION}"
 export KERNELS_DIR=${PROJECT_vbt}/vbt/jupyter/kernels
 echo $KERNEL_NAME
@@ -24,29 +26,74 @@ if [ -d "${KERNEL_DIR}" ]; then
   exit 1
 fi
 
-# 1.1 - Load basic Python module
-module -q purge
-module -q load Stages/2025
-module -q load GCC
-module -q load Python
 
-# 2. Create kernel.sh and launch the vbt-spack-env
-cat > "./kernel.sh" <<EOF
-#!/bin/bash
 
-module load Stages/2025
+# 1.1 Create easybuild file for the VBT Spack environment
+cat > "./vbt-kernel-${KERNEL_VERSION}-gpsfbf-${GPSFBF_VERSION}.eb" <<EOF
+# Built with EasyBuild version 4.9.4 on 2025-10-29_09-40-14
+import os as local_os
+
+easyblock = 'Bundle'
+name = 'vbt-kernel'
+version = '${KERNEL_VERSION}'
+
+homepage = 'https://www.virtualbraintwin.eu/'
+
+description = (
+    "VBT Kernel testing with EasyBuild"
+)
+
+toolchain = {'name': 'gpsfbf', 'version': '${GPSFBF_VERSION}'}
+
+local_system_name = local_os.getenv('SYSTEMNAME')
+
+# Disable local Spack user configuration
+modextravars = {'SPACK_DISABLE_LOCAL_CONFIG': 'true'}
+
+# Spack handles libraries via RPATH, so only minimal paths are needed
+local_spack_view = (
+    f"/p/scratch/vbt/vbt-spack/vbt_spack_kernel/${KERNEL_VERSION}/virtualbraintwin/installation/data/vbt-spack-env/.spack-env/view"
+)
+
+modluafooter = f"""
+-- Spack view path
+prepend_path("PATH", "{local_spack_view}/bin")
+prepend_path("PYTHONPATH", "{local_spack_view}/lib/python${PYTHON_VERSION}/site-packages")
+"""
+
+moduleclass = 'tools'
+EOF
+
+chmod +x ./vbt-kernel-${KERNEL_VERSION}-gpsfbf-${GPSFBF_VERSION}.eb
+module --force purge
+module load Stages/${STAGES_VERSION}
+export USERINSTALLATIONS=$PROJECT_vbt
+module load UserInstallations
+eb vbt-kernel-${KERNEL_VERSION}-gpsfbf-${GPSFBF_VERSION}.eb
+
+# 2.1 - Load basic Python module
+module purge
+module load Stages/${STAGES_VERSION}
 module load GCC
 module load Python
 
-export KERNEL_VERSION="${KERNEL_VERSION}"
+# 2.2 Create kernel.sh and launch the vbt-spack-env
+cat > "./kernel.sh" <<EOF
+#!/bin/bash
 
-source ${SCRATCH_vbt}/vbt-spack/vbt_spack_kernel/${KERNEL_VERSION}/virtualbraintwin/installation/spack/share/spack/setup-env.sh
-spack env activate -p ${SCRATCH_vbt}/vbt-spack/vbt_spack_kernel/${KERNEL_VERSION}/virtualbraintwin/installation/data/vbt-spack-env
+export USERINSTALLATIONS=$PROJECT_vbt
+module purge
+module load Stages/${STAGES_VERSION}
+module load GCC/${GCC_VERSION}
+module load ParaStationMPI/${ParaStationMPI_VERSION}
+module load vbt-kernel/${KERNEL_VERSION}
 
 EOF
 
 chmod +x "./kernel.sh"
-source ./kernel.sh
+
+chmod +x "./vbt-spack_env.sh"
+source ./vbt-spack_env.sh
 
 # 3. Create Jupyter kernel configuration
 
