@@ -69,6 +69,7 @@ module --force purge
 module load Stages/${STAGES_VERSION}
 export USERINSTALLATIONS=$PROJECT_vbt
 module load UserInstallations
+ml
 eb vbt-kernel-${KERNEL_VERSION}-gpsfbf-${GPSFBF_VERSION}.eb
 
 # 2.1 - Load basic Python module

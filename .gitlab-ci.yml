@@ -21,7 +21,6 @@ test-create-cache:
     - ls --all ./installation/shared/
     - mv ./installation/shared/.generate_cache.log .create_cache.generate_cache.log
     - export RESULT=$(grep . "$TMPFILE" | tail -n 2 | head -n 1)
-    - mv $TMPFILE .complete_log.txt
     - |
       if [ "$RESULT" != "true" ]; then
        exit 1
@@ -29,7 +28,6 @@ test-create-cache:
   artifacts:
     when: always
     paths:
-      - .complete_log.txt
       - .create_cache.generate_cache.log
     expire_in: 1 week
 
@@ -57,7 +55,6 @@ test-use-cache:
     - mv ./installation/shared/.generate_cache.log .use_cache.generate_cache.log
     - echo "==============================================="
     - export RESULT=$(grep . "$TMPFILE" | tail -n 2 | head -n 1)
-    - mv $TMPFILE .complete_log.txt
     - source /builds/virtualbraintwin/infrastructure/virtualbraintwin/installation/spack/share/spack/setup-env.sh && spack env activate -p  /builds/virtualbraintwin/infrastructure/virtualbraintwin/installation/data/test-spack-env && spack find -c
     - |
       if [ "$RESULT" != "true" ]; then
@@ -66,9 +63,32 @@ test-use-cache:
   artifacts:
     when: always
     paths:
-      - .complete_log.txt
       - .use_cache.generate_cache.log
     expire_in: 1 week
+
+test-job:
+  environment:
+    name: caching-rocky
+  variables:
+    CUSTOM_CI_BUILDS_DIR: /p/scratch/vbt/vbt-spack/vbt_spack_kernel/$KERNEL_VERSION
+    HOME: /p/scratch/vbt/vbt-spack/vbt_spack_kernel/$KERNEL_VERSION
+    SPACK_USER_CONFIG_PATH: /p/scratch/vbt/vbt-spack/vbt_spack_kernel/$KERNEL_VERSION
+    DEPLOY_TYPE: "hpc"
+  id_tokens:
+    SITE_ID_TOKEN:
+      aud: "https://gitlab.jsc.fz-juelich.de"
+  stage: test
+  timeout: 72 hours
+  tags:
+    - juwels
+    - jacamar
+    - login
+    - shell
+  script:
+    - ml
+    - module --force purge
+    - module load Stages/2025
+    - ml
 
 build-cache-ubuntu-local:
   environment:
@@ -90,7 +110,6 @@ build-cache-ubuntu-local:
     - bash -c 'set -o pipefail && ./installation/shared/vbt.sh "create_cache.py" "./installation/" | tee "$TMPFILE"'
     - mv ./installation/shared/.generate_cache.log .build_cache_ubuntu_local.generate_cache.log
     - export RESULT=$(grep . "$TMPFILE" | tail -n 2 | head -n 1)
-    - mv $TMPFILE .complete_log.txt
     - |
       if [ "$RESULT" != "true" ]; then
        exit 1
@@ -98,7 +117,6 @@ build-cache-ubuntu-local:
   artifacts:
     when: always
     paths:
-      - .complete_log.txt
       - .build_cache_ubuntu_local.generate_cache.log
     expire_in: never
 
@@ -159,7 +177,6 @@ build-cache-rocky-hpc:
     - bash -c 'set -o pipefail && ./installation/shared/vbt.sh "create_cache.py" "./installation/" | tee "$TMPFILE"'
     - cp $CUSTOM_CI_BUILDS_DIR/virtualbraintwin/installation/shared/.generate_cache.log $CI_PROJECT_DIR/build_cache_ubuntu_rocky.generate_cache.log
     - export RESULT=$(grep . "$TMPFILE" | tail -n 2 | head -n 1)
-    - cp $TMPFILE $CI_PROJECT_DIR/complete_log.txt
     - |
       if [ "$RESULT" != "true" ]; then
        exit 1
@@ -176,7 +193,6 @@ build-cache-rocky-hpc:
   artifacts:
     when: always
     paths:
-      - $CI_PROJECT_DIR/complete_log.txt
       - $CI_PROJECT_DIR/build_cache_ubuntu_rocky.generate_cache.log
       - spack_logs
     expire_in: never
@@ -230,7 +246,6 @@ install-vbt-spack-env-hpc:
     - bash -c 'set -o pipefail && ./installation/shared/vbt.sh "use_cache.py" "./installation/" | tee "$TMPFILE"'
     - cp $CUSTOM_CI_BUILDS_DIR/virtualbraintwin/installation/shared/.generate_cache.log $CI_PROJECT_DIR/build_cache_ubuntu_rocky.generate_cache.log
     - export RESULT=$(grep . "$TMPFILE" | tail -n 2 | head -n 1)
-    - cp $TMPFILE $CI_PROJECT_DIR/complete_log.txt
     - |
       if [ "$RESULT" != "true" ]; then
        exit 1
@@ -247,7 +262,6 @@ install-vbt-spack-env-hpc:
   artifacts:
     when: always
     paths:
-      - $CI_PROJECT_DIR/complete_log.txt
       - $CI_PROJECT_DIR/build_cache_ubuntu_rocky.generate_cache.log
       - spack_logs
     expire_in: never
