@@ -66,30 +66,6 @@ test-use-cache:
       - .use_cache.generate_cache.log
     expire_in: 1 week
 
-test-job:
-  environment:
-    name: caching-rocky
-  variables:
-    CUSTOM_CI_BUILDS_DIR: /p/scratch/vbt/vbt-spack/vbt_spack_kernel/$KERNEL_VERSION
-    HOME: /p/scratch/vbt/vbt-spack/vbt_spack_kernel/$KERNEL_VERSION
-    SPACK_USER_CONFIG_PATH: /p/scratch/vbt/vbt-spack/vbt_spack_kernel/$KERNEL_VERSION
-    DEPLOY_TYPE: "hpc"
-  id_tokens:
-    SITE_ID_TOKEN:
-      aud: "https://gitlab.jsc.fz-juelich.de"
-  stage: test
-  timeout: 72 hours
-  tags:
-    - juwels
-    - jacamar
-    - login
-    - shell
-  script:
-    - ml
-    - module --force purge
-    - module load Stages/2025
-    - ml
-
 build-cache-ubuntu-local:
   environment:
     name: caching-ubuntu
