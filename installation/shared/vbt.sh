@@ -11,7 +11,6 @@ else
     exit 1
 fi
 
-apt update && apt install -y dos2unix
 
 echo "Installing dependencies"
 if [[ "$ID" == "rocky" || "$ID_LIKE" == *"rhel"* ]]; then
@@ -21,6 +20,7 @@ if [[ "$ID" == "rocky" || "$ID_LIKE" == *"rhel"* ]]; then
     module load Python
 elif [[ "$ID" == "ubuntu" || "$ID_LIKE" == *"debian"* ]]; then
     echo "Ubuntu 24.04"
+    apt update && apt install -y dos2unix
     ls --all
     dos2unix ./shared/commons/bootstrap.sh
     chmod +x ./shared/commons/bootstrap.sh
