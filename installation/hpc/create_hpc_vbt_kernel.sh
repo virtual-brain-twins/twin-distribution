@@ -67,6 +67,8 @@ EOF
 chmod +x ./vbt-kernel-${KERNEL_VERSION}-gpsfbf-${GPSFBF_VERSION}.eb
 module --force purge
 module load Stages/${STAGES_VERSION}
+module load GCCcore/.13.3.0
+module load GCC
 export USERINSTALLATIONS=$PROJECT_vbt
 module load UserInstallations
 ml
@@ -81,7 +83,6 @@ module load Python
 # 2.2 Create kernel.sh and launch the vbt-spack-env
 cat > "./kernel.sh" <<EOF
 #!/bin/bash
-
 export USERINSTALLATIONS=$PROJECT_vbt
 module purge
 module load Stages/${STAGES_VERSION}
