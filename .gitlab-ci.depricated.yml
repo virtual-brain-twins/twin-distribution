@@ -1,0 +1,57 @@
+stages:
+  - release
+
+create-box:
+  environment:
+    name: caching-ubuntu
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule" && $OPERATION == "release"'
+  stage: release
+  when: manual
+  timeout: 3 hours
+  tags:
+    - vm-runner
+  before_script:
+    - echo "VirtualBox version:"
+    - vboxmanage --version
+    - echo "Vagrant version:"
+    - vagrant --version
+    # install VirtualBox and Vagrant on the Ci runner
+    - chmod +x $CI_PROJECT_DIR/installation/shared/release/release_vagrant_box_tools.sh
+    - $CI_PROJECT_DIR/installation/shared/release/release_vagrant_box_tools.sh
+  script:
+    # Output version to verify install
+    - echo "VirtualBox version:"
+    - vboxmanage --version
+    - echo "Vagrant version:"
+    - vagrant --version
+    - cd $CI_PROJECT_DIR/installation/local/VM_user
+  #    - vagrant up
+  #    - cd /
+  #    - vagrant package --base VM_vbt_user --output $BOX_NAME
+  artifacts:
+    when: always
+    paths:
+      - $BOX_NAME
+    expire_in: never
+
+release-gitlab:
+  stage: release
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  needs:
+#    - release-vbt-kernel
+      - create-box
+  tags:
+    - $DOCKER_RUNNER_TAG
+  rules:
+    - if: $CI_COMMIT_TAG
+  script:
+    - echo "running release_job"
+  release:
+    tag_name: '$CI_COMMIT_TAG'
+    description: '$CI_COMMIT_TAG'
+  artifacts:
+    when: always
+    paths:
+      - $BOX_NAME
+    expire_in: never

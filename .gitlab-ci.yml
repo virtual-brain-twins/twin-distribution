@@ -21,7 +21,6 @@ test-create-cache:
     - ls --all ./installation/shared/
     - mv ./installation/shared/.generate_cache.log .create_cache.generate_cache.log
     - export RESULT=$(grep . "$TMPFILE" | tail -n 2 | head -n 1)
-    - mv $TMPFILE .complete_log.txt
     - |
       if [ "$RESULT" != "true" ]; then
        exit 1
@@ -29,7 +28,6 @@ test-create-cache:
   artifacts:
     when: always
     paths:
-      - .complete_log.txt
       - .create_cache.generate_cache.log
     expire_in: 1 week
 
@@ -57,7 +55,6 @@ test-use-cache:
     - mv ./installation/shared/.generate_cache.log .use_cache.generate_cache.log
     - echo "==============================================="
     - export RESULT=$(grep . "$TMPFILE" | tail -n 2 | head -n 1)
-    - mv $TMPFILE .complete_log.txt
     - source /builds/virtualbraintwin/infrastructure/virtualbraintwin/installation/spack/share/spack/setup-env.sh && spack env activate -p  /builds/virtualbraintwin/infrastructure/virtualbraintwin/installation/data/test-spack-env && spack find -c
     - |
       if [ "$RESULT" != "true" ]; then
@@ -66,7 +63,6 @@ test-use-cache:
   artifacts:
     when: always
     paths:
-      - .complete_log.txt
       - .use_cache.generate_cache.log
     expire_in: 1 week
 
@@ -90,7 +86,6 @@ build-cache-ubuntu-local:
     - bash -c 'set -o pipefail && ./installation/shared/vbt.sh "create_cache.py" "./installation/" | tee "$TMPFILE"'
     - mv ./installation/shared/.generate_cache.log .build_cache_ubuntu_local.generate_cache.log
     - export RESULT=$(grep . "$TMPFILE" | tail -n 2 | head -n 1)
-    - mv $TMPFILE .complete_log.txt
     - |
       if [ "$RESULT" != "true" ]; then
        exit 1
@@ -98,7 +93,6 @@ build-cache-ubuntu-local:
   artifacts:
     when: always
     paths:
-      - .complete_log.txt
       - .build_cache_ubuntu_local.generate_cache.log
     expire_in: never
 
@@ -159,7 +153,6 @@ build-cache-rocky-hpc:
     - bash -c 'set -o pipefail && ./installation/shared/vbt.sh "create_cache.py" "./installation/" | tee "$TMPFILE"'
     - cp $CUSTOM_CI_BUILDS_DIR/virtualbraintwin/installation/shared/.generate_cache.log $CI_PROJECT_DIR/build_cache_ubuntu_rocky.generate_cache.log
     - export RESULT=$(grep . "$TMPFILE" | tail -n 2 | head -n 1)
-    - cp $TMPFILE $CI_PROJECT_DIR/complete_log.txt
     - |
       if [ "$RESULT" != "true" ]; then
        exit 1
@@ -176,7 +169,6 @@ build-cache-rocky-hpc:
   artifacts:
     when: always
     paths:
-      - $CI_PROJECT_DIR/complete_log.txt
       - $CI_PROJECT_DIR/build_cache_ubuntu_rocky.generate_cache.log
       - spack_logs
     expire_in: never
@@ -230,7 +222,6 @@ install-vbt-spack-env-hpc:
     - bash -c 'set -o pipefail && ./installation/shared/vbt.sh "use_cache.py" "./installation/" | tee "$TMPFILE"'
     - cp $CUSTOM_CI_BUILDS_DIR/virtualbraintwin/installation/shared/.generate_cache.log $CI_PROJECT_DIR/build_cache_ubuntu_rocky.generate_cache.log
     - export RESULT=$(grep . "$TMPFILE" | tail -n 2 | head -n 1)
-    - cp $TMPFILE $CI_PROJECT_DIR/complete_log.txt
     - |
       if [ "$RESULT" != "true" ]; then
        exit 1
@@ -247,7 +238,6 @@ install-vbt-spack-env-hpc:
   artifacts:
     when: always
     paths:
-      - $CI_PROJECT_DIR/complete_log.txt
       - $CI_PROJECT_DIR/build_cache_ubuntu_rocky.generate_cache.log
       - spack_logs
     expire_in: never
@@ -276,7 +266,6 @@ cleanup-release-env:
   after_script:
     - echo ${CUSTOM_CI_BUILDS_DIR}/${USER}
     - rm -rf ${CUSTOM_CI_BUILDS_DIR}/${USER}
-    - ls --all
 
 release-vbt-kernel:
   environment:
@@ -289,6 +278,7 @@ release-vbt-kernel:
     HOME: /p/scratch/vbt/vbt-spack/vbt_spack_kernel/$KERNEL_VERSION
     SPACK_USER_CONFIG_PATH: /p/scratch/vbt/vbt-spack/vbt_spack_kernel/$KERNEL_VERSION
     DEPLOY_TYPE: "hpc"
+    JSC_OVERRIDE_TOOLCHAIN_CHECK: "1"
   id_tokens:
     SITE_ID_TOKEN:
       aud: "https://gitlab.jsc.fz-juelich.de"
@@ -305,7 +295,6 @@ release-vbt-kernel:
     - export FULL_PATH=$(pwd)
     - echo $FULL_PATH
     - cd $CUSTOM_CI_BUILDS_DIR
-    - ls
     - echo $USER
     - cd ./virtualbraintwin/installation/hpc/
     - bash ./create_hpc_vbt_kernel.sh
@@ -329,40 +318,6 @@ sync_to_github:
     - cd virtualbraintwin
     - git remote add github https://$GITHUB_MIRROR_TOKEN@github.com/virtual-brain-twins/twin-distribution.git
     - git push github master:master --force
-
-create-box:
-  environment:
-    name: caching-ubuntu
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "schedule" && $OPERATION == "release"'
-  stage: release
-  when: manual
-  timeout: 3 hours
-  tags:
-    - vm-runner
-  before_script:
-    - echo "VirtualBox version:"
-    - vboxmanage --version
-    - echo "Vagrant version:"
-    - vagrant --version
-    # install VirtualBox and Vagrant on the Ci runner
-    - chmod +x $CI_PROJECT_DIR/installation/shared/release/release_vagrant_box_tools.sh
-    - $CI_PROJECT_DIR/installation/shared/release/release_vagrant_box_tools.sh
-  script:
-    # Output version to verify install
-    - echo "VirtualBox version:"
-    - vboxmanage --version
-    - echo "Vagrant version:"
-    - vagrant --version
-    - cd $CI_PROJECT_DIR/installation/local/VM_user
-  #    - vagrant up
-  #    - cd /
-  #    - vagrant package --base VM_vbt_user --output $BOX_NAME
-  artifacts:
-    when: always
-    paths:
-      - $BOX_NAME
-    expire_in: never
 
 release-gitlab:
   stage: release
