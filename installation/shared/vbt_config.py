@@ -24,7 +24,7 @@ vbt_spack_env_name = os.getenv('VBT_SPACK_ENV_NAME')
 if home_path:
     install_dir = Path(f'{home_path}/').resolve()
 else:
-    install_dir = Path('../').resolve()
+    install_dir = Path(__file__).resolve().parent.parent
 data_dir = install_dir / 'data'
 os.makedirs(data_dir, exist_ok=True)
 concretization_dir = data_dir / 'concretize_cache'

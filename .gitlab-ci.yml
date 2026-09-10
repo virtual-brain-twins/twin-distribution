@@ -147,7 +147,7 @@ build-cache-rocky-hpc:
     - cd $CUSTOM_CI_BUILDS_DIR
     - cp -r $FULL_PATH $CUSTOM_CI_BUILDS_DIR
     - cd virtualbraintwin
-    - module load StdEnv/2025
+    - module load StdEnv/2026
     - export TMPFILE=$(mktemp)
     - chmod +x ./installation/shared/vbt.sh
     - bash -c 'set -o pipefail && ./installation/shared/vbt.sh "create_cache.py" "./installation/" | tee "$TMPFILE"'
@@ -161,7 +161,7 @@ build-cache-rocky-hpc:
     - mkdir -p $CI_PROJECT_DIR/spack_logs/installed $CI_PROJECT_DIR/spack_logs/not_installed
     # for succesfully installed packages: keep the spack logs for any package modified during this CI job
     # (we use repo.yaml, that is modified at each start of the pipeline, as a reference file)
-    - . ./installation/spack/share/spack/setup-env.sh
+    - . "/p/scratch/vbt/vbt-spack/vbt_spack_kernel/$KERNEL_VERSION/virtualbraintwin/installation/spack/share/spack/setup-env.sh"
     - cd $(spack-python -c "print(spack.store.parse_install_tree(spack.config.get('config'))[0])")
     - find . -mindepth 4 -maxdepth 4 -newer $SPACK_REPO_PATH/repo.yaml \( -name ".spack" -o -name ".build" \) -exec cp -r --parents "{}" $CI_PROJECT_DIR/spack_logs/installed \;
     # for not succesfully installed packages: also keep the spack logs for any packages that failed
@@ -216,7 +216,7 @@ install-vbt-spack-env-hpc:
     - cd $CUSTOM_CI_BUILDS_DIR
     - cp -r $FULL_PATH $CUSTOM_CI_BUILDS_DIR
     - cd virtualbraintwin
-    - module load StdEnv/2025
+    - module load StdEnv/2026
     - export TMPFILE=$(mktemp)
     - chmod +x ./installation/shared/vbt.sh
     - bash -c 'set -o pipefail && ./installation/shared/vbt.sh "use_cache.py" "./installation/" | tee "$TMPFILE"'
@@ -230,7 +230,7 @@ install-vbt-spack-env-hpc:
     - mkdir -p $CI_PROJECT_DIR/spack_logs/installed $CI_PROJECT_DIR/spack_logs/not_installed
     # for succesfully installed packages: keep the spack logs for any package modified during this CI job
     # (we use repo.yaml, that is modified at each start of the pipeline, as a reference file)
-    - . ./installation/spack/share/spack/setup-env.sh
+    - . "/p/scratch/vbt/vbt-spack/vbt_spack_kernel/$KERNEL_VERSION/virtualbraintwin/installation/spack/share/spack/setup-env.sh"
     - cd $(spack-python -c "print(spack.store.parse_install_tree(spack.config.get('config'))[0])")
     - find . -mindepth 4 -maxdepth 4 -newer $SPACK_REPO_PATH/repo.yaml \( -name ".spack" -o -name ".build" \) -exec cp -r --parents "{}" $CI_PROJECT_DIR/spack_logs/installed \;
     # for not succesfully installed packages: also keep the spack logs for any packages that failed
