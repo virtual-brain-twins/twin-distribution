@@ -18,8 +18,9 @@ test-create-cache:
     - export TMPFILE=$(mktemp)
     - chmod +x ./installation/shared/vbt.sh
     - bash -c 'set -o pipefail && ./installation/shared/vbt.sh "create_cache.py" "./installation/" | tee "$TMPFILE"'
-    - ls --all ./installation/shared/
-    - mv ./installation/shared/.generate_cache.log .create_cache.generate_cache.log
+    - mv ./installation/shared/.generate_cache.log .create_cache.generate_cache.log || true
+    - echo "=== spack install output (.generate_cache.log) ==="
+    - cat .create_cache.generate_cache.log || echo "(no spack log produced)"
     - export RESULT=$(grep . "$TMPFILE" | tail -n 2 | head -n 1)
     - |
       if [ "$RESULT" != "true" ]; then
@@ -46,16 +47,14 @@ test-use-cache:
   script:
     - export TMPFILE=$(mktemp)
     - chmod +x ./installation/shared/vbt.sh
-    - ls
     - bash -c 'set -o pipefail && ./installation/shared/vbt.sh "use_cache.py" "./installation/" | tee "$TMPFILE"'
     - echo "==============================================="
-    - ls
-    - echo "==============================================="
-    - ls --all ./installation/shared/
-    - mv ./installation/shared/.generate_cache.log .use_cache.generate_cache.log
+    - mv ./installation/shared/.generate_cache.log .use_cache.generate_cache.log || true
+    - echo "=== spack install output (.generate_cache.log) ==="
+    - cat .use_cache.generate_cache.log || echo "(no spack log produced)"
     - echo "==============================================="
     - export RESULT=$(grep . "$TMPFILE" | tail -n 2 | head -n 1)
-    - source /builds/virtualbraintwin/infrastructure/virtualbraintwin/installation/spack/share/spack/setup-env.sh && spack env activate -p  /builds/virtualbraintwin/infrastructure/virtualbraintwin/installation/data/test-spack-env && spack find -c
+    - source $CI_PROJECT_DIR/installation/spack/share/spack/setup-env.sh && spack env activate -p  $CI_PROJECT_DIR/installation/data/test-spack-env && spack find -c
     - |
       if [ "$RESULT" != "true" ]; then
        exit 1
