@@ -65,35 +65,35 @@ test-use-cache:
       - .use_cache.generate_cache.log
     expire_in: 1 week
 
-build-cache-ubuntu-local:
-  environment:
-    name: caching-ubuntu
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "schedule" && $OPERATION == "cache"'
-  image: ubuntu:24.04
-  stage: build
-  timeout: 72 hours
-  tags:
-    - $DOCKER_RUNNER_TAG
-  variables:
-    DEPLOY_TYPE: "local"
-    CONCRETIZE_OCI_VERSION: "CONCRETIZE_OCI_VERSION_UBUNTU"
-    BUILDCACHE_OCI_VERSION: "BUILDCACHE_OCI_VERSION_UBUNTU"
-  script:
-    - export TMPFILE=$(mktemp)
-    - chmod +x ./installation/shared/vbt.sh
-    - bash -c 'set -o pipefail && ./installation/shared/vbt.sh "create_cache.py" "./installation/" | tee "$TMPFILE"'
-    - mv ./installation/shared/.generate_cache.log .build_cache_ubuntu_local.generate_cache.log
-    - export RESULT=$(grep . "$TMPFILE" | tail -n 2 | head -n 1)
-    - |
-      if [ "$RESULT" != "true" ]; then
-       exit 1
-      fi
-  artifacts:
-    when: always
-    paths:
-      - .build_cache_ubuntu_local.generate_cache.log
-    expire_in: never
+#build-cache-ubuntu-local:
+#  environment:
+#    name: caching-ubuntu
+#  rules:
+#    - if: '$CI_PIPELINE_SOURCE == "schedule" && $OPERATION == "cache"'
+#  image: ubuntu:24.04
+#  stage: build
+#  timeout: 72 hours
+#  tags:
+#    - $DOCKER_RUNNER_TAG
+#  variables:
+#    DEPLOY_TYPE: "local"
+#    CONCRETIZE_OCI_VERSION: "CONCRETIZE_OCI_VERSION_UBUNTU"
+#    BUILDCACHE_OCI_VERSION: "BUILDCACHE_OCI_VERSION_UBUNTU"
+#  script:
+#    - export TMPFILE=$(mktemp)
+#    - chmod +x ./installation/shared/vbt.sh
+#    - bash -c 'set -o pipefail && ./installation/shared/vbt.sh "create_cache.py" "./installation/" | tee "$TMPFILE"'
+#    - mv ./installation/shared/.generate_cache.log .build_cache_ubuntu_local.generate_cache.log
+#    - export RESULT=$(grep . "$TMPFILE" | tail -n 2 | head -n 1)
+#    - |
+#      if [ "$RESULT" != "true" ]; then
+#       exit 1
+#      fi
+#  artifacts:
+#    when: always
+#    paths:
+#      - .build_cache_ubuntu_local.generate_cache.log
+#    expire_in: never
 
 .cleanup-hpc-environment-template:
   environment:
