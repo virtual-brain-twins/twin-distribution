@@ -225,15 +225,15 @@ install-vbt-spack-env-hpc:
       if [ "$RESULT" != "true" ]; then
        exit 1
       fi
-  after_script:
-    - mkdir -p $CI_PROJECT_DIR/spack_logs/installed $CI_PROJECT_DIR/spack_logs/not_installed
-    # for succesfully installed packages: keep the spack logs for any package modified during this CI job
-    # (we use repo.yaml, that is modified at each start of the pipeline, as a reference file)
-    - . "/p/scratch/vbt/vbt-spack/vbt_spack_kernel/$KERNEL_VERSION/virtualbraintwin/installation/spack/share/spack/setup-env.sh"
-    - cd $(spack-python -c "print(spack.store.parse_install_tree(spack.config.get('config'))[0])")
-    - find . -mindepth 4 -maxdepth 4 -newer $SPACK_REPO_PATH/repo.yaml \( -name ".spack" -o -name ".build" \) -exec cp -r --parents "{}" $CI_PROJECT_DIR/spack_logs/installed \;
-    # for not succesfully installed packages: also keep the spack logs for any packages that failed
-    - if cd /tmp/$(whoami)/spack-stage/; then find . -maxdepth 2 \( -name "*.txt" -o -name ".install_time_tests" \) -exec cp -r --parents "{}" $CI_PROJECT_DIR/spack_logs/not_installed \;; fi
+#  after_script:
+#    - mkdir -p $CI_PROJECT_DIR/spack_logs/installed $CI_PROJECT_DIR/spack_logs/not_installed
+#    # for succesfully installed packages: keep the spack logs for any package modified during this CI job
+#    # (we use repo.yaml, that is modified at each start of the pipeline, as a reference file)
+#    - . "/p/scratch/vbt/vbt-spack/vbt_spack_kernel/$KERNEL_VERSION/virtualbraintwin/installation/spack/share/spack/setup-env.sh"
+#    - cd $(spack-python -c "print(spack.store.parse_install_tree(spack.config.get('config'))[0])")
+#    - find . -mindepth 4 -maxdepth 4 -newer $SPACK_REPO_PATH/repo.yaml \( -name ".spack" -o -name ".build" \) -exec cp -r --parents "{}" $CI_PROJECT_DIR/spack_logs/installed \;
+#    # for not succesfully installed packages: also keep the spack logs for any packages that failed
+#    - if cd /tmp/$(whoami)/spack-stage/; then find . -maxdepth 2 \( -name "*.txt" -o -name ".install_time_tests" \) -exec cp -r --parents "{}" $CI_PROJECT_DIR/spack_logs/not_installed \;; fi
   artifacts:
     when: always
     paths:
@@ -329,12 +329,10 @@ release-gitlab:
   rules:
     - if: $CI_COMMIT_TAG
   script:
-    - echo "running release_job"
-  release:
-    tag_name: '$CI_COMMIT_TAG'
-    description: '$CI_COMMIT_TAG'
-  artifacts:
-    when: always
-    paths:
-      - $BOX_NAME
-    expire_in: never
+    - |
+      if release-cli get --tag-name "$CI_COMMIT_TAG" > /dev/null 2>&1; then
+        echo "Release $CI_COMMIT_TAG already exists - leaving it as is"
+      else
+        echo "Creating release $CI_COMMIT_TAG"
+        release-cli create --tag-name "$CI_COMMIT_TAG" --description "$CI_COMMIT_TAG"
+      fi
