@@ -9,9 +9,9 @@ CI/CD variables in GitLab and **must be set whenever a new version is needed.
 
 | Variable | Controls | Default |
 |---|---|---|
-| `CONCRETIZE_OCI_VERSION` | Version of the concretization cache | _TBD_ |
-| `BUILDCACHE_OCI_VERSION` | Version of the binary (build) cache | _TBD_ |
-| `KERNEL_VERSION` | Version of the JupyterLab kernel | _TBD_ |
+| `CONCRETIZE_OCI_VERSION` | Version of the concretization cache | rocky_hpc_v4.3 |
+| `BUILDCACHE_OCI_VERSION` | Version of the binary (build) cache | rocky_hpc_v4.3 |
+| `KERNEL_VERSION` | Version of the JupyterLab kernel | v4.3 |
 
 Each of the three must be initialized with a default value. If they are left unset, the pipeline
 does not produce a new version.
@@ -26,7 +26,7 @@ rules:
   - if: '$CI_PIPELINE_SOURCE == "schedule" && $OPERATION == "cache"'
 ```
 
-Two jobs run under that rule — `build-cache-ubuntu-local` (Ubuntu / Docker runner) and
+Two jobs run under that rule — `build-cache-ubuntu-local` (Ubuntu / Docker runner; most likely deprecated in the latest updated. It was commented out from the CI/CD pipeline)  and
 `build-cache-rocky-hpc` (Rocky / JUWELS shell runner at JSC). Both have a 72 hour timeout.
 
 The schedule can also be **triggered manually**: go to *Build → Pipeline schedules* in GitLab and
@@ -49,5 +49,5 @@ The release triggers, in order:
 2. `release-vbt-kernel` — builds and deploys the JupyterLab kernel (EasyBuild bundle wrapping the
    Spack view, registered as a Jupyter kernel).
 
-So the full sequence is: **bump the version variables → run the cache schedule → confirm it passed →
+So the full sequence is: **increase the version variables → run the cache schedule → confirm it passed →
 create a release → the Spack environment is installed and the JupyterLab kernel is deployed.**
