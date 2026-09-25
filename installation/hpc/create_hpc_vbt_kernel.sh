@@ -32,6 +32,8 @@ module -q load Stages/2025
 module -q load GCC
 module -q load Python
 
+chgrp -R vbt ${SCRATCH_vbt}/vbt-spack/vbt_spack_kernel/${KERNEL_VERSION}
+chmod -R 755 ${SCRATCH_vbt}/vbt-spack/vbt_spack_kernel/${KERNEL_VERSION}
 # 2. Create kernel.sh and launch the vbt-spack-env
 cat > "./kernel.sh" <<EOF
 #!/bin/bash
