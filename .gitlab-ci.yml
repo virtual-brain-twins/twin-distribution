@@ -18,8 +18,9 @@ test-create-cache:
     - export TMPFILE=$(mktemp)
     - chmod +x ./installation/shared/vbt.sh
     - bash -c 'set -o pipefail && ./installation/shared/vbt.sh "create_cache.py" "./installation/" | tee "$TMPFILE"'
-    - ls --all ./installation/shared/
-    - mv ./installation/shared/.generate_cache.log .create_cache.generate_cache.log
+    - mv ./installation/shared/.generate_cache.log .create_cache.generate_cache.log || true
+    - echo "=== spack install output (.generate_cache.log) ==="
+    - cat .create_cache.generate_cache.log || echo "(no spack log produced)"
     - export RESULT=$(grep . "$TMPFILE" | tail -n 2 | head -n 1)
     - |
       if [ "$RESULT" != "true" ]; then
@@ -46,16 +47,14 @@ test-use-cache:
   script:
     - export TMPFILE=$(mktemp)
     - chmod +x ./installation/shared/vbt.sh
-    - ls
     - bash -c 'set -o pipefail && ./installation/shared/vbt.sh "use_cache.py" "./installation/" | tee "$TMPFILE"'
     - echo "==============================================="
-    - ls
-    - echo "==============================================="
-    - ls --all ./installation/shared/
-    - mv ./installation/shared/.generate_cache.log .use_cache.generate_cache.log
+    - mv ./installation/shared/.generate_cache.log .use_cache.generate_cache.log || true
+    - echo "=== spack install output (.generate_cache.log) ==="
+    - cat .use_cache.generate_cache.log || echo "(no spack log produced)"
     - echo "==============================================="
     - export RESULT=$(grep . "$TMPFILE" | tail -n 2 | head -n 1)
-    - source /builds/virtualbraintwin/infrastructure/virtualbraintwin/installation/spack/share/spack/setup-env.sh && spack env activate -p  /builds/virtualbraintwin/infrastructure/virtualbraintwin/installation/data/test-spack-env && spack find -c
+    - source $CI_PROJECT_DIR/installation/spack/share/spack/setup-env.sh && spack env activate -p  $CI_PROJECT_DIR/installation/data/test-spack-env && spack find -c
     - |
       if [ "$RESULT" != "true" ]; then
        exit 1
@@ -66,35 +65,35 @@ test-use-cache:
       - .use_cache.generate_cache.log
     expire_in: 1 week
 
-build-cache-ubuntu-local:
-  environment:
-    name: caching-ubuntu
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "schedule" && $OPERATION == "cache"'
-  image: ubuntu:24.04
-  stage: build
-  timeout: 72 hours
-  tags:
-    - $DOCKER_RUNNER_TAG
-  variables:
-    DEPLOY_TYPE: "local"
-    CONCRETIZE_OCI_VERSION: "CONCRETIZE_OCI_VERSION_UBUNTU"
-    BUILDCACHE_OCI_VERSION: "BUILDCACHE_OCI_VERSION_UBUNTU"
-  script:
-    - export TMPFILE=$(mktemp)
-    - chmod +x ./installation/shared/vbt.sh
-    - bash -c 'set -o pipefail && ./installation/shared/vbt.sh "create_cache.py" "./installation/" | tee "$TMPFILE"'
-    - mv ./installation/shared/.generate_cache.log .build_cache_ubuntu_local.generate_cache.log
-    - export RESULT=$(grep . "$TMPFILE" | tail -n 2 | head -n 1)
-    - |
-      if [ "$RESULT" != "true" ]; then
-       exit 1
-      fi
-  artifacts:
-    when: always
-    paths:
-      - .build_cache_ubuntu_local.generate_cache.log
-    expire_in: never
+#build-cache-ubuntu-local:
+#  environment:
+#    name: caching-ubuntu
+#  rules:
+#    - if: '$CI_PIPELINE_SOURCE == "schedule" && $OPERATION == "cache"'
+#  image: ubuntu:24.04
+#  stage: build
+#  timeout: 72 hours
+#  tags:
+#    - $DOCKER_RUNNER_TAG
+#  variables:
+#    DEPLOY_TYPE: "local"
+#    CONCRETIZE_OCI_VERSION: "CONCRETIZE_OCI_VERSION_UBUNTU"
+#    BUILDCACHE_OCI_VERSION: "BUILDCACHE_OCI_VERSION_UBUNTU"
+#  script:
+#    - export TMPFILE=$(mktemp)
+#    - chmod +x ./installation/shared/vbt.sh
+#    - bash -c 'set -o pipefail && ./installation/shared/vbt.sh "create_cache.py" "./installation/" | tee "$TMPFILE"'
+#    - mv ./installation/shared/.generate_cache.log .build_cache_ubuntu_local.generate_cache.log
+#    - export RESULT=$(grep . "$TMPFILE" | tail -n 2 | head -n 1)
+#    - |
+#      if [ "$RESULT" != "true" ]; then
+#       exit 1
+#      fi
+#  artifacts:
+#    when: always
+#    paths:
+#      - .build_cache_ubuntu_local.generate_cache.log
+#    expire_in: never
 
 .cleanup-hpc-environment-template:
   environment:
@@ -147,7 +146,7 @@ build-cache-rocky-hpc:
     - cd $CUSTOM_CI_BUILDS_DIR
     - cp -r $FULL_PATH $CUSTOM_CI_BUILDS_DIR
     - cd virtualbraintwin
-    - module load StdEnv/2025
+    - module load StdEnv/2026
     - export TMPFILE=$(mktemp)
     - chmod +x ./installation/shared/vbt.sh
     - bash -c 'set -o pipefail && ./installation/shared/vbt.sh "create_cache.py" "./installation/" | tee "$TMPFILE"'
@@ -157,15 +156,15 @@ build-cache-rocky-hpc:
       if [ "$RESULT" != "true" ]; then
        exit 1
       fi
-  after_script:
-    - mkdir -p $CI_PROJECT_DIR/spack_logs/installed $CI_PROJECT_DIR/spack_logs/not_installed
-    # for succesfully installed packages: keep the spack logs for any package modified during this CI job
-    # (we use repo.yaml, that is modified at each start of the pipeline, as a reference file)
-    - . ./installation/spack/share/spack/setup-env.sh
-    - cd $(spack-python -c "print(spack.store.parse_install_tree(spack.config.get('config'))[0])")
-    - find . -mindepth 4 -maxdepth 4 -newer $SPACK_REPO_PATH/repo.yaml \( -name ".spack" -o -name ".build" \) -exec cp -r --parents "{}" $CI_PROJECT_DIR/spack_logs/installed \;
-    # for not succesfully installed packages: also keep the spack logs for any packages that failed
-    - if cd /tmp/$(whoami)/spack-stage/; then find . -maxdepth 2 \( -name "*.txt" -o -name ".install_time_tests" \) -exec cp -r --parents "{}" $CI_PROJECT_DIR/spack_logs/not_installed \;; fi
+#  after_script:
+#    - mkdir -p $CI_PROJECT_DIR/spack_logs/installed $CI_PROJECT_DIR/spack_logs/not_installed
+#    # for succesfully installed packages: keep the spack logs for any package modified during this CI job
+#    # (we use repo.yaml, that is modified at each start of the pipeline, as a reference file)
+#    - . "/p/scratch/vbt/vbt-spack/vbt_spack_kernel/$KERNEL_VERSION/virtualbraintwin/installation/spack/share/spack/setup-env.sh"
+#    - cd $(spack-python -c "print(spack.store.parse_install_tree(spack.config.get('config'))[0])")
+#    - find . -mindepth 4 -maxdepth 4 -newer $SPACK_REPO_PATH/repo.yaml \( -name ".spack" -o -name ".build" \) -exec cp -r --parents "{}" $CI_PROJECT_DIR/spack_logs/installed \;
+#    # for not succesfully installed packages: also keep the spack logs for any packages that failed
+#    - if cd /tmp/$(whoami)/spack-stage/; then find . -maxdepth 2 \( -name "*.txt" -o -name ".install_time_tests" \) -exec cp -r --parents "{}" $CI_PROJECT_DIR/spack_logs/not_installed \;; fi
   artifacts:
     when: always
     paths:
@@ -216,7 +215,7 @@ install-vbt-spack-env-hpc:
     - cd $CUSTOM_CI_BUILDS_DIR
     - cp -r $FULL_PATH $CUSTOM_CI_BUILDS_DIR
     - cd virtualbraintwin
-    - module load StdEnv/2025
+    - module load StdEnv/2026
     - export TMPFILE=$(mktemp)
     - chmod +x ./installation/shared/vbt.sh
     - bash -c 'set -o pipefail && ./installation/shared/vbt.sh "use_cache.py" "./installation/" | tee "$TMPFILE"'
@@ -226,15 +225,15 @@ install-vbt-spack-env-hpc:
       if [ "$RESULT" != "true" ]; then
        exit 1
       fi
-  after_script:
-    - mkdir -p $CI_PROJECT_DIR/spack_logs/installed $CI_PROJECT_DIR/spack_logs/not_installed
-    # for succesfully installed packages: keep the spack logs for any package modified during this CI job
-    # (we use repo.yaml, that is modified at each start of the pipeline, as a reference file)
-    - . ./installation/spack/share/spack/setup-env.sh
-    - cd $(spack-python -c "print(spack.store.parse_install_tree(spack.config.get('config'))[0])")
-    - find . -mindepth 4 -maxdepth 4 -newer $SPACK_REPO_PATH/repo.yaml \( -name ".spack" -o -name ".build" \) -exec cp -r --parents "{}" $CI_PROJECT_DIR/spack_logs/installed \;
-    # for not succesfully installed packages: also keep the spack logs for any packages that failed
-    - if cd /tmp/$(whoami)/spack-stage/; then find . -maxdepth 2 \( -name "*.txt" -o -name ".install_time_tests" \) -exec cp -r --parents "{}" $CI_PROJECT_DIR/spack_logs/not_installed \;; fi
+#  after_script:
+#    - mkdir -p $CI_PROJECT_DIR/spack_logs/installed $CI_PROJECT_DIR/spack_logs/not_installed
+#    # for succesfully installed packages: keep the spack logs for any package modified during this CI job
+#    # (we use repo.yaml, that is modified at each start of the pipeline, as a reference file)
+#    - . "/p/scratch/vbt/vbt-spack/vbt_spack_kernel/$KERNEL_VERSION/virtualbraintwin/installation/spack/share/spack/setup-env.sh"
+#    - cd $(spack-python -c "print(spack.store.parse_install_tree(spack.config.get('config'))[0])")
+#    - find . -mindepth 4 -maxdepth 4 -newer $SPACK_REPO_PATH/repo.yaml \( -name ".spack" -o -name ".build" \) -exec cp -r --parents "{}" $CI_PROJECT_DIR/spack_logs/installed \;
+#    # for not succesfully installed packages: also keep the spack logs for any packages that failed
+#    - if cd /tmp/$(whoami)/spack-stage/; then find . -maxdepth 2 \( -name "*.txt" -o -name ".install_time_tests" \) -exec cp -r --parents "{}" $CI_PROJECT_DIR/spack_logs/not_installed \;; fi
   artifacts:
     when: always
     paths:
@@ -330,12 +329,10 @@ release-gitlab:
   rules:
     - if: $CI_COMMIT_TAG
   script:
-    - echo "running release_job"
-  release:
-    tag_name: '$CI_COMMIT_TAG'
-    description: '$CI_COMMIT_TAG'
-  artifacts:
-    when: always
-    paths:
-      - $BOX_NAME
-    expire_in: never
+    - |
+      if release-cli get --tag-name "$CI_COMMIT_TAG" > /dev/null 2>&1; then
+        echo "Release $CI_COMMIT_TAG already exists - leaving it as is"
+      else
+        echo "Creating release $CI_COMMIT_TAG"
+        release-cli create --tag-name "$CI_COMMIT_TAG" --description "$CI_COMMIT_TAG"
+      fi
